@@ -121,12 +121,7 @@ const lowestPrice = ({ addResponse, removeResponse, item, showOffer }) => {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => navigate("ProductsDetails", {
-          id: item.id, name: item.name, url: [
-            images.sambarPodi,
-            images.pudhina,
-            images.ginger,
-            images.vadam,
-          ]
+         item: item
         })}
       >
         <OfferData item={item} showOffer={showOffer} />
