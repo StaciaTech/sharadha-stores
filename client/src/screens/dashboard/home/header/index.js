@@ -10,6 +10,7 @@ import styles from "./styles";
 import { Location } from "@utils/icons";
 import { Cart } from "../../../../assets/icons/cart";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CartFillSvg from "../../../../assets/icons/cartFill";
 export default header = (props) => {
   const { viewRTLStyle, isDark } = useValues();
   const { self } = useSelector((state) => state.account);
@@ -45,8 +46,8 @@ export default header = (props) => {
 
   const setShopLocation = async (newLocation) => {
     try {
-      await AsyncStorage.setItem('shop_location', newLocation);
-      setLocation(newLocation); 
+      await AsyncStorage.setItem("shop_location", newLocation);
+      setLocation(newLocation);
       setOpenLoc(false);
     } catch (error) {
       console.error("Failed to store location in AsyncStorage:", error);
@@ -104,7 +105,7 @@ export default header = (props) => {
         </TouchableOpacity>
         <View>
           <Text style={styles.headerTitle}>Saradtha Stores</Text>
-          <Text style={{ color: '#8d8d8d' }}>{location}</Text>
+          <Text style={{ color: "#8d8d8d" }}>{location}</Text>
         </View>
         {openLoc && (
           <View style={styles.changeLoc}>
@@ -114,13 +115,22 @@ export default header = (props) => {
             >
               <Location />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}  onPress={() => setShopLocation(location == 'Guindy' ? 'West Mambalam' : 'Guindy' )}>{ location == 'Guindy' ? 'West Mambalam' : 'Guindy' }</Text>
+            <Text
+              style={styles.headerTitle}
+              onPress={() =>
+                setShopLocation(
+                  location == "Guindy" ? "West Mambalam" : "Guindy"
+                )
+              }
+            >
+              {location == "Guindy" ? "West Mambalam" : "Guindy"}
+            </Text>
           </View>
         )}
       </View>
       <View style={styles.leftHeader}>
-        <TouchableOpacity onPress={() => navigation.navigate('CartList')}>
-          <Cart color={"#17349D"} />
+        <TouchableOpacity onPress={() => navigation.navigate("CartList")}>
+          <CartFillSvg color={"#17349D"} />
         </TouchableOpacity>
       </View>
     </View>

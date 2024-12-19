@@ -8,6 +8,9 @@ import { Category, Cart, Home, Profile, Offers } from "@utils/icons";
 import { CartList, CategoryScreen, OffersList, PageList } from "../screens";
 import { TabComponents } from "@otherComponents";
 import { PageStackScreen } from "./pageStackNavigator";
+import HomeIcon from "../assets/icons/homeIcon";
+import MenuIcon from "../assets/icons/menuIcon";
+import ProfileIcon from "../assets/icons/profileIcon";
 
 const Tab = createBottomTabNavigator();
 
@@ -21,9 +24,9 @@ export default TabStackScreen = () => {
         name="HomeStackScreen"
         component={HomeStackScreen}
         options={{
-          tabBarLabel: "Home",
-          activeTabBarIcon: () => <Home />,
-          tabBarIcon: () => <Home color={"#93A3DD"} />,
+          // tabBarLabel: "Home",
+          activeTabBarIcon: () => <HomeIcon />,
+          tabBarIcon: () => <HomeIcon />,
           headerShown: false,
         }}
       />
@@ -31,9 +34,9 @@ export default TabStackScreen = () => {
         name="CategoryScreen"
         component={CategoryScreen}
         options={{
-          tabBarLabel: "Category",
-          activeTabBarIcon: () => <Category />,
-          tabBarIcon: () => <Category color={"#93A3DD"} />,
+          // tabBarLabel: "Category",
+          activeTabBarIcon: () => <MenuIcon />,
+          tabBarIcon: () => <MenuIcon color={"#93A3DD"} />,
           headerShown: false,
         }}
       />
@@ -61,9 +64,9 @@ export default TabStackScreen = () => {
         name="PageList"
         component={PageStackScreen}
         options={{
-          tabBarLabel: "Account",
-          activeTabBarIcon: () => <Profile />,
-          tabBarIcon: () => <Profile color={"#93A3DD"} />,
+          // tabBarLabel: "Account",
+          activeTabBarIcon: () => <ProfileIcon />,
+          tabBarIcon: () => <ProfileIcon color={"#93A3DD"} />,
           headerShown: false,
         }}
       />

@@ -122,6 +122,7 @@ const productsForYou = [
 export function ProductsDetails({ navigation, route }) {
   const item = route.params.item;
   const { colors } = useTheme();
+
   const { questionLoading } = useSelector((state) => state.product);
   const [attribute, setAttribute] = useState([]);
   const [message, setMessage] = useState("");
@@ -388,6 +389,28 @@ export function ProductsDetails({ navigation, route }) {
     setValue("cartData", JSON.stringify(cart));
   };
 
+  const categories = useSelector((state) => state.category.categories);
+  const [randomProduct, setRandomProduct] = useState(null);
+
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      const randomIndex = Math.floor(Math.random() * categories.length);
+      setRandomProduct(categories[randomIndex]?.data);
+    }
+  }, [categories]);
+
+  // const categories = useSelector((data) => data.category.categories);
+  // console.log(categories);
+
+  const flatendeArr = categories?.flatMap((obj) => obj.data);
+
+  const getRandomItems = (array, count) => {
+    if (array.length <= count) return array; // Return the full array if it's smaller than or equal to the count
+    const shuffled = [...array].sort(() => 0.5 - Math.random()); // Shuffle the array
+    return shuffled.slice(0, count); // Select the first `count` items
+  };
+  const selectedItems = getRandomItems(flatendeArr, 7);
+
   return (
     <SafeAreaView
       style={{
@@ -566,7 +589,7 @@ export function ProductsDetails({ navigation, route }) {
             fontWeight: "600",
             paddingHorizontal: windowWidth(24),
             backgroundColor: "#fff",
-            paddingVertical: windowHeight(12)
+            paddingVertical: windowHeight(12),
           }}
         >
           Frequently Bought Together
@@ -576,7 +599,7 @@ export function ProductsDetails({ navigation, route }) {
           showLoader={loading}
           // visibleDeleteModal={deleteCartData}
           navigation={navigation}
-          data={productsForYou}
+          data={randomProduct}
           onPress={addDataToCart}
         />
         {/* </View> */}
@@ -590,7 +613,7 @@ export function ProductsDetails({ navigation, route }) {
             navigation={navigation}
             title={"You May Also Like"}
             subtitle={"This product are curated for special you"}
-            data={productsForYou}
+            data={selectedItems}
             from="product"
             id={productDetail?.id}
             // getDetails={getDetails}

@@ -26,72 +26,7 @@ import images from "../../utils/images";
 import CartFillSvg from "../../assets/icons/cartFill";
 import SearchIcon from "../../assets/icons/searchIcon";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const productsForYou = [
-  {
-    id: 1,
-    name: "Sambar Podi",
-    original_url: images.sambarPodi,
-    quantity: "500",
-    weight: "500",
-    price: 120,
-    sale_price: 230,
-  },
-  {
-    id: 2,
-    name: "Pudhina Vadam",
-    original_url: images.pudhina,
-    quantity: "500",
-    weight: "500",
-    price: 120,
-    sale_price: 230,
-  },
-  {
-    id: 3,
-    name: "Ginger Puli",
-    original_url: images.ginger,
-    quantity: "250",
-    weight: "250",
-    price: 50,
-    sale_price: 230,
-  },
-  {
-    id: 4,
-    name: "Javvarisi Vadam",
-    original_url: images.vadam,
-    quantity: "250",
-    weight: "250",
-    price: 50,
-    sale_price: 230,
-  },
-  {
-    id: 5,
-    name: "Puliyodharai Powder",
-    original_url: images.powder,
-    quantity: "250",
-    weight: "250",
-    price: 50,
-    sale_price: 230,
-  },
-  {
-    id: 6,
-    name: "Thamarai thandu Vadam",
-    original_url: images.thamarai,
-    quantity: "250",
-    weight: "250",
-    price: 50,
-    sale_price: 230,
-  },
-  {
-    id: 7,
-    name: "Wheel Vadam",
-    original_url: images.wheel,
-    quantity: "250",
-    weight: "250",
-    price: 50,
-    sale_price: 230,
-  },
-];
+import { categoryData } from "../../api/store/actions";
 
 export function SearchScreen({ navigation }) {
   const [searchValue, setSearchValue] = useState("");
@@ -100,6 +35,12 @@ export function SearchScreen({ navigation }) {
   const [recentSearched, setRecentSearched] = useState();
   const dispatch = useDispatch();
   const { colors } = useTheme();
+  const categories = useSelector((data) => data.category.categories);
+  // console.log(categories);
+
+  const productsForYou = categories?.flatMap((obj) => obj.data);
+  // console.log(productsForYou);
+
   const { isDark, viewRTLStyle, textRTLStyle } = useValues();
 
   const { searchList, recentSearch, searchedProduct } = useSelector(
@@ -209,7 +150,7 @@ export function SearchScreen({ navigation }) {
     loadRecentProducts();
   }, []);
 
-  console.log(recentProductArr, "recent products");
+  // console.log(recentProductArr, "recent products");
 
   return (
     <SafeAreaView>

@@ -23,6 +23,7 @@ import { getValue, setValue } from "@utils/localStorage";
 import { updateCartValue } from "@api/store/reducers/cartReducer";
 import { manageDetails, removeData } from "@utils/helper";
 import styles from "./styles";
+import SearchInput from "../../dashboard/home/searchInput";
 
 export function ProductsList({ route, navigation }) {
   const { productsFilter, originalProductList, brands } = useSelector(
@@ -144,7 +145,6 @@ export function ProductsList({ route, navigation }) {
   //   }
   // };
 
-  
   // const addCart = async (id, valueType) => {
   //   const data = {
   //     product_id: id,
@@ -153,8 +153,6 @@ export function ProductsList({ route, navigation }) {
   //   };
   //   await dispatch(addToCart(data));
   // };
-
-  
 
   // const storeCart = (data) => {
   //   dispatch(updateCartValue(data));
@@ -174,7 +172,6 @@ export function ProductsList({ route, navigation }) {
   //   }
   // };
 
-  
   const addDataToCart = async (item, newQuantity, valueType) => {
     try {
       // Dispatch an action to update the backend
@@ -255,15 +252,17 @@ export function ProductsList({ route, navigation }) {
         contentContainerStyle={styles.containerStyle}
       >
         <View style={styles.container}>
-          <Input
+          {/* <Input
             top={windowHeight(1)}
             placeholder={"Search Product Here.."}
             leftIcon={
               <Search width={windowWidth(24)} height={windowHeight(24)} />
             }
-            onChangeText={(val) => filterProducts(val)}
+            // onChangeText={(val) => filterProducts(val)}
+            // onFocus={() => navigation.navigate("SearchScreen")}
             height={windowHeight(40)}
-          />
+          /> */}
+          <SearchInput onPress={() => navigation.navigate("SearchScreen")} />
         </View>
         <ProductView
           showLoader={loading}

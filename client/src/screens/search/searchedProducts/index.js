@@ -22,8 +22,8 @@ export default searchedProduct = ({
     navigate("ProductsDetails", { id });
   };
 
-  const goToProductDetails = () => {
-    navigate("ProductsDetails");
+  const goToProductDetails = (item) => {
+    navigate("ProductsDetails", { item: item });
   };
 
   return (
@@ -45,7 +45,8 @@ export default searchedProduct = ({
           activeOpacity={0.8}
           onPress={() => {
             addProduct(item.name);
-            goToProductDetails();
+            goToProductDetails(item);
+            // console.log(item);
           }}
           style={styles.click}
         >
