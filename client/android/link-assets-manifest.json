@@ -1,0 +1,29 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/Mulish-Bold.ttf",
+      "sha1": "081709d53ef238523c257d2544571efa55281552"
+    },
+    {
+      "path": "src/assets/fonts/Mulish-ExtraBold.ttf",
+      "sha1": "eab0fa8dcde903b5fdec3bfe94c645f48cf0bf7d"
+    },
+    {
+      "path": "src/assets/fonts/Mulish-SemiBold.ttf",
+      "sha1": "f0fb50e215acf52b1d9070db111b4d477ba37a05"
+    },
+    {
+      "path": "src/assets/fonts/NunitoSans-Regular.ttf",
+      "sha1": "ca3f0c571f343961d9d333d53926262f1e243398"
+    },
+    {
+      "path": "src/assets/fonts/Quicksand-Bold.ttf",
+      "sha1": "171c939980530054b184f11a16f4d8a16f4530b3"
+    },
+    {
+      "path": "src/assets/fonts/Quicksand-Medium.ttf",
+      "sha1": "a9e8a61db39bc1705da9724e7bff29eb4ea2f150"
+    }
+  ]
+}

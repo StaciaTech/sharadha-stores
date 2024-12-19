@@ -1,1 +1,0 @@
-# sharadha-stores

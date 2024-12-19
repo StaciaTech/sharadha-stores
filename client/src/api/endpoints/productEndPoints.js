@@ -1,0 +1,9 @@
+export const products = "product";
+export const productsFilter = "attribute";
+export const productDetail = "product/";
+export const addtoCart = "cart";
+export const addtoWishList = "wishlist";
+export const questionAnswer = "question-and-answer?product_id=";
+export const questionAnswerFeedback = "question-and-answer/feedback";
+export const addQuestion = "question-and-answer";
+export const review = "review";
