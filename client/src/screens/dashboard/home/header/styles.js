@@ -1,0 +1,115 @@
+import { StyleSheet } from "react-native";
+import { fontSizes, windowHeight, windowWidth } from "@theme/appConstant";
+import appFonts from "@theme/appFonts";
+import appColors from "@theme/appColors";
+
+export default styles = StyleSheet.create({
+  header: {
+    // width: windowWidth(181),
+    // height: windowHeight(43),
+    // flexDirection: "row",
+    // alignItems: "center",
+    width: "100%",
+    // height: windowHeight(48),
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: windowWidth(20),
+    paddingVertical: windowHeight(10),
+    zIndex: 10,
+  },
+  leftHeader: {
+    width: windowHeight(35),
+    height: windowHeight(35),
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: windowHeight(35) / 2,
+    backgroundColor: "#E8EDFF",
+    // padding: 8,
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    columnGap: 10,
+    position: "relative",
+    width: "60%",
+  },
+  headerTitle: {
+    fontFamily: appFonts.mulishBold,
+    fontSize: fontSizes.FONT18,
+    color: "#000000",
+  },
+  location: {
+    justifyContent: "center",
+    alignItems: "center",
+    // height: "100%",
+    width: "30%",
+    backgroundColor: "#EFF3FF",
+  },
+  changeLoc: {
+    position: "absolute",
+    top: 55,
+    left: -8,
+    backgroundColor: "#ffffff",
+    zIndex: 10,
+    elevation: 5,
+    // padding: 10,
+    borderWidth: 1,
+    borderColor: "#17349D",
+    height: windowHeight(50),
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    columnGap: 10,
+    paddingLeft: windowWidth(10),
+    borderRadius: windowHeight(6),
+  },
+  mainView: {
+    width: "100%",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    paddingHorizontal: windowWidth(20),
+    alignItems: "center",
+  },
+  view: {
+    alignItems: "center",
+  },
+  locationText: {
+    fontFamily: appFonts.mulish,
+    fontSize: fontSizes.FONT20,
+    marginLeft: windowWidth(6),
+  },
+  profile: {
+    width: windowWidth(50),
+    height: windowHeight(50),
+  },
+  logoImg: {
+    height: windowHeight(17),
+    width: windowWidth(140),
+    resizeMode: "stretch",
+  },
+  nameContainer: {
+    height: windowHeight(35),
+    width: windowHeight(35),
+    borderRadius: windowHeight(35),
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: appColors.primary,
+  },
+  imageContainer: {
+    height: windowHeight(35),
+    width: windowHeight(35),
+    borderRadius: windowHeight(35),
+  },
+  name: {
+    fontFamily: appFonts.mulishBold,
+    fontSize: fontSizes.FONT22,
+    color: appColors.white,
+  },
+  image: {
+    height: windowHeight(35),
+    wight: windowWidth(40),
+    borderRadius: windowWidth(50),
+    resizeMode: "cover",
+  },
+});

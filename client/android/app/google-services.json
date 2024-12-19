@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "323778747839",
+    "project_id": "saradha-stores1",
+    "storage_bucket": "saradha-stores1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:323778747839:android:50b11233dffb303f0c950a",
+        "android_client_info": {
+          "package_name": "com.fastkartapi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "323778747839-ihajfrm38ltpipk6an9chgolrghqb25v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fastkartapi",
+            "certificate_hash": "870f97df9879c1c1024bcdf5e9d01a1ccf13b4c5"
+          }
+        },
+        {
+          "client_id": "323778747839-4e0g91eg4mpp4vucqgolcmh5mm78o9vs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDefz8V7lFQk_sie5N3uWInC29aZPH-euA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "323778747839-4e0g91eg4mpp4vucqgolcmh5mm78o9vs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
