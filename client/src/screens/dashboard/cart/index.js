@@ -43,6 +43,7 @@ import axios from "axios";
 import Modal1 from "react-native-modal";
 import { Location, Cart } from "@utils/icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { URL } from "../../../api/config";
 // import { Sheet } from "react-modal-sheet";
 const OrderPlacedPopup = ({ visible, onClose, onNavigate }) => {
   useEffect(() => {
@@ -346,7 +347,7 @@ export function CartList({ navigation }) {
       // formData.append('cusname', 'baskar');
       // formData.append('products', JSON.stringify(items));
       const res = await axios.post(
-        "http://192.168.0.115:7000/user/place-order",
+        `${URL}/user/place-order`,
         {
           values: items,
         }

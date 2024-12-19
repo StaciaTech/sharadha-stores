@@ -11,7 +11,7 @@ import appColors from "@theme/appColors";
 import styles from "./styles";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { URL } from "../../../../api/config";
 const ItemsView = ({ showLoader, navigation, data, onPress }) => {
   const { isDark, viewRTLStyle, viewSelfRTLStyle } = useValues();
   const { currSymbol, currValue } = useSelector((state) => state.other);
@@ -22,6 +22,8 @@ const ItemsView = ({ showLoader, navigation, data, onPress }) => {
   const [orderHistory, setOrderHistory] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState(null); // Store phone as a string
   const { colors } = useTheme();
+
+  console.log(URL);
 
   const getPhone = async () => {
     try {
@@ -50,7 +52,7 @@ const ItemsView = ({ showLoader, navigation, data, onPress }) => {
     }
     try {
       const res = await axios.get(
-        `http://192.168.0.115:7000/user/order-history/CUST-${phone.slice(6, 10)}`
+        `${URL}/user/order-history/CUST-${phone.slice(6, 10)}`
       );
       setOrderHistory(res.data.docs);
       console.log("Fetched orders:", res.data.docs);

@@ -151,46 +151,46 @@ export function Home({ navigation }) {
   }, []);
 
   const storeUserInfo = async (userInfo) => {
-    try{
+    try {
       await AsyncStorage.setItem("@userInfo", userInfo);
-    }catch(err){
+    } catch (err) {
       console.log("Couldn't set user info");
     }
-  }
- 
+  };
+
   const GoogleSingUp = async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      const tokens = await GoogleSignin.getTokens(); 
+      const tokens = await GoogleSignin.getTokens();
       // console.log(userInfo.data.user);
       await AsyncStorage.setItem("@idToken", tokens.idToken);
       await AsyncStorage.setItem("googleUserInfo", JSON.stringify(userInfo));
       // console.log('User Info:', userInfo);
-      // console.log('Tokens:', tokens.accessToken); 
-      Alert.alert('Success', `Access Token: ${tokens.accessToken}`);
+      // console.log('Tokens:', tokens.accessToken);
+      Alert.alert("Success", `Access Token: ${tokens.accessToken}`);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        Alert.alert('Cancelled', 'User cancelled the login flow.');
+        Alert.alert("Cancelled", "User cancelled the login flow.");
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        Alert.alert('In Progress', 'Sign-In is already in progress.');
+        Alert.alert("In Progress", "Sign-In is already in progress.");
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert('Error', 'Google Play Services not available.');
+        Alert.alert("Error", "Google Play Services not available.");
       } else {
-        Alert.alert('Error', error.message);
+        Alert.alert("Error", error.message);
       }
-  }
+    }
   };
 
   const handleLogout = async () => {
     try {
       await GoogleSignin.signOut();
-      navigation.navigate('Login')
+      navigation.navigate("Login");
       console.log("User signed out");
     } catch (error) {
       console.error("Error during sign out:", error);
     }
-  }
+  };
 
   // const pastOrders = [
   //   {
@@ -325,6 +325,16 @@ export function Home({ navigation }) {
     messageRef.current.animate();
   };
 
+  // vikram
+  const categories = useSelector((state) => state.category.categories);
+  const [randomProduct, setRandomProduct] = useState(null);
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      const randomIndex = Math.floor(Math.random() * categories.length);
+      setRandomProduct(categories[randomIndex]?.data);
+    }
+  }, [categories]);
+
   return (
     <SafeAreaView style={GlobalStyle.container}>
       <Header navigation={navigation} />
@@ -355,15 +365,17 @@ export function Home({ navigation }) {
             },
           ]}
         >
-          <LowestPrice
-            showAlert={showAlert}
-            navigation={navigation}
-            title={"Products for you!"}
-            subtitle={"This product are curated for special you"}
-            data={productsForYou}
-            from="offers"
-            showOffer
-          />
+          {randomProduct && (
+            <LowestPrice
+              showAlert={showAlert}
+              navigation={navigation}
+              title={"Products for you!"}
+              subtitle={"This product are curated for special you"}
+              data={randomProduct}
+              from="offers"
+              showOffer
+            />
+          )}
         </View>
       </ScrollView>
       {/* {loading ? (
