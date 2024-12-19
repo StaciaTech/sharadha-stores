@@ -1,28 +1,23 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { HeaderArrow, Filter, Cart } from "@utils/icons";
-import { useTheme, useNavigation } from "@react-navigation/native";
-import { useValues } from "@utils/context";
-import appColors from "@theme/appColors";
-import { useSelector } from "react-redux";
-import styles from "./styles";
+import React from 'react';
+import {View, Text, TouchableOpacity} from 'react-native';
+import {HeaderArrow, Filter, Cart} from '@utils/icons';
+import {useTheme, useNavigation} from '@react-navigation/native';
+import {useValues} from '@utils/context';
+import appColors from '@theme/appColors';
+import {useSelector} from 'react-redux';
+import styles from './styles';
 
-export function ProductListHeader({
-  total,
-  title,
-  viewRTLStyle,
-  modalVisible,
-}) {
-  const { colors } = useTheme();
-  const { isDark } = useValues();
-  const { cartList } = useSelector((state) => state.cart);
+export function ProductListHeader({total, title, viewRTLStyle, modalVisible}) {
+  const {colors} = useTheme();
+  const {isDark} = useValues();
+  const {cartList} = useSelector(state => state.cart);
   const data = cartList?.items || cartList || [];
-  const { navigate, goBack } = useNavigation();
+  const {navigate, goBack} = useNavigation();
   const isValidTotal =
-    total !== undefined && total !== null && total !== 0 && total !== "";
+    total !== undefined && total !== null && total !== 0 && total !== '';
 
   const gotoCart = () => {
-    navigate("CartList");
+    navigate('CartList');
   };
 
   return (
@@ -32,13 +27,11 @@ export function ProductListHeader({
         {
           flexDirection: viewRTLStyle,
         },
-      ]}
-    >
+      ]}>
       <TouchableOpacity
         style={styles.logoContainer}
         activeOpacity={0.7}
-        onPress={() => goBack()}
-      >
+        onPress={() => goBack()}>
         <HeaderArrow />
         <Text
           style={[
@@ -46,8 +39,7 @@ export function ProductListHeader({
             {
               color: colors.text,
             },
-          ]}
-        >
+          ]}>
           {title}
         </Text>
       </TouchableOpacity>
@@ -56,8 +48,7 @@ export function ProductListHeader({
         <TouchableOpacity
           onPress={gotoCart}
           activeOpacity={0.7}
-          style={styles.cartClick}
-        >
+          style={styles.cartClick}>
           <Cart color={isDark ? appColors.white : appColors.black} />
           {data.length > 0 && (
             <Text
@@ -67,12 +58,11 @@ export function ProductListHeader({
                   backgroundColor: isDark ? appColors.white : appColors.black,
                   color: isDark ? appColors.black : appColors.white,
                 },
-              ]}
-            >
+              ]}>
               {data && (
                 <Text style={styles.totalTitle}>
                   {data.length || 0}
-                  {data.length && data.length > 99 && "+"}
+                  {data.length && data.length > 99 && '+'}
                 </Text>
               )}
             </Text>

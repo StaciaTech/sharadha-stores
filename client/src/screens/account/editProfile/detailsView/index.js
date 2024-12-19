@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View} from 'react-native';
 import {Input} from '@commonComponents';
 import {AtSign, Profile} from '@utils/icons';
@@ -8,10 +8,11 @@ import appColors from '@theme/appColors';
 import styles from './styles';
 
 export default detailsView = props => {
+  console.log(props)
   const [form, setForm] = useState({
-    name: props.data?.name,
-    email: props.data?.email,
-    phone: props.data?.phone.toString(),
+    name: props.data?.name ,
+    email: props.data?.email ,
+    phone: '',
   });
   const [errors, setErrors] = useState({});
 
@@ -23,6 +24,7 @@ export default detailsView = props => {
       });
     }
   };
+
 
   return (
     <View style={styles.container}>

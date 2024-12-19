@@ -21,9 +21,13 @@ import Data from "@utils/json";
 import { emailValidate } from "@utils/helper";
 import styles from "./styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { addAddress, loadAddresses, saveAddresses } from "../../api/store/reducers/deliveryAddReducer";
+import {
+  addAddress,
+  loadAddresses,
+  saveAddresses,
+} from "../../api/store/reducers/deliveryAddReducer";
 export function AddAddress({ navigation, route }) {
-  const addresses = useSelector((state) => state.delivery.addresses); 
+  const addresses = useSelector((state) => state.delivery.addresses);
   const [form, setForm] = useState({
     title: route?.params?.add.title,
     street: route?.params?.add.street,
@@ -158,6 +162,7 @@ export function AddAddress({ navigation, route }) {
 
   const handleAddAddress = async () => {
     const data = {
+      name: form.name,
       title: form.title,
       street: form.street,
       type: "shipping",
@@ -242,14 +247,16 @@ export function AddAddress({ navigation, route }) {
             />
           </View>
         )} */}
-        <Text
-          style={[
-            styles.title,
-            { color: colors.text, marginTop: windowHeight(20) },
-          ]}
-        >
-          Address Details
-        </Text>
+       
+        <Input
+          placeholder={"Name"}
+          value={form.name}
+          onChangeText={(value) => {
+            onChange({ name: "name", value });
+          }}
+          error={errors.name}
+        />
+       
         <Input
           placeholder={"Title (Home, Office, Work)"}
           value={form.title}

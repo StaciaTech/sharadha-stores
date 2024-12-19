@@ -1,37 +1,44 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Image
-} from 'react-native';
-import appColors from '@theme/appColors';
-import {useIsFocused, useTheme, useFocusEffect} from '@react-navigation/native';
-import {MenuItem} from '@otherComponents';
-import {Header} from '@commonComponents';
-import ProfileView from './profileView';
-import {SignOut} from '@utils/icons';
-import {clearValue, setValue} from '@utils/localStorage';
-import {useValues} from '@utils/context';
-import {useDispatch, useSelector} from 'react-redux';
-import {windowHeight} from '@theme/appConstant';
-import {financialState} from '@api/store/reducers/accountReducer';
-import {resetState} from '@api/store/reducers';
-import Data from '@utils/json';
-import Switch from './switch';
-import styles from './styles';
-import images from '@utils/images';
-import {DrawerArrow} from '@utils/icons';
+  Image,
+} from "react-native";
+import appColors from "@theme/appColors";
+import {
+  useIsFocused,
+  useTheme,
+  useFocusEffect,
+} from "@react-navigation/native";
+import { MenuItem } from "@otherComponents";
+import { Header } from "@commonComponents";
+import ProfileView from "./profileView";
+import { SignOut } from "@utils/icons";
+import { clearValue, setValue } from "@utils/localStorage";
+import { useValues } from "@utils/context";
+import { useDispatch, useSelector } from "react-redux";
+import { windowHeight } from "@theme/appConstant";
+import { financialState } from "@api/store/reducers/accountReducer";
+import { resetState } from "@api/store/reducers";
+import Data from "@utils/json";
+import Switch from "./switch";
+import styles from "./styles";
+import images from "@utils/images";
+import { DrawerArrow } from "@utils/icons";
+import { Assets } from "react-navigation-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function PageList(props) {
-  const {setIsDark, setIsRTL, isDark, viewRTLStyle, isRTL, token} = useValues();
+  const { setIsDark, setIsRTL, isDark, viewRTLStyle, isRTL, token } =
+    useValues();
   const dispatch = useDispatch();
-  const {notifications} = useSelector(state => state.notification);
+  const { notifications } = useSelector((state) => state.notification);
   const [count, setCount] = useState();
 
-  const {colors} = useTheme();
+  const { colors } = useTheme();
   const isFocused = useIsFocused();
 
   const goToScreen = (screen, val) => {
@@ -40,6 +47,33 @@ export function PageList(props) {
       dispatch(financialState(val));
     }
   };
+
+  const getUserInfo = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem("googleUserInfo");
+      return userInfo != null ? JSON.parse(userInfo) : null;
+    } catch (error) {
+      console.error("Error retrieving user info:", error);
+    }
+  };
+
+  // const getToken = async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem("@idToken");
+  //     console.log(token);
+  //   } catch (error) {
+  //     console.error("Error retrieving user info:", error);
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const userInfo = await getUserInfo();
+      // console.log("User Info:", userInfo.data.user);
+    };
+
+    fetchUserInfo();
+  }, []);
 
   useEffect(() => {
     checkCount();
@@ -56,12 +90,12 @@ export function PageList(props) {
       checkCount();
 
       return () => {};
-    }, [isFocused]),
+    }, [isFocused])
   );
 
   const checkCount = () => {
     var count = 0;
-    notifications?.map(item => {
+    notifications?.map((item) => {
       if (item.read_at == null) count = count + 1;
       setCount(count);
     });
@@ -75,8 +109,17 @@ export function PageList(props) {
     dispatch(resetState());
     props.navigation.reset({
       index: 0,
-      routes: [{name: 'Login'}],
+      routes: [{ name: "Login" }],
     });
+  };
+
+  const handleLogout = async () => {
+    try {
+      await GoogleSignin.signOut();
+      console.log("User signed out");
+    } catch (error) {
+      console.error("Error during sign out:", error);
+    }
   };
 
   const logout = async () => {
@@ -88,40 +131,40 @@ export function PageList(props) {
     dispatch(resetState());
     props.navigation.reset({
       index: 0,
-      routes: [{name: 'Login'}],
+      routes: [{ name: "Login" }],
     });
   };
 
   const visibleCurrencyModal = () => {
-    props.navigation.navigate('ChangeCurrency');
+    props.navigation.navigate("ChangeCurrency");
   };
 
   const goToEdit = () => {
-    props.navigation.navigate('EditProfile');
+    props.navigation.navigate("EditProfile");
   };
 
-  const handleToggleDarkMode = async isOn => {
+  const handleToggleDarkMode = async (isOn) => {
     try {
       setIsDark(isOn);
-      await setValue('Dark', isOn.toString());
+      await setValue("Dark", isOn.toString());
     } catch (error) {
-      console.error('Error toggling dark mode:', error);
+      console.error("Error toggling dark mode:", error);
     }
   };
 
-  const handleToggleRTL = async isOn => {
+  const handleToggleRTL = async (isOn) => {
     try {
       setIsRTL(isOn);
-      await setValue('RTL', isOn.toString());
+      await setValue("RTL", isOn.toString());
     } catch (error) {
-      console.error('Error toggling RTL mode:', error);
+      console.error("Error toggling RTL mode:", error);
     }
   };
 
   return (
-    <SafeAreaView style={{backgroundColor: colors.background}}>
+    <SafeAreaView style={{ backgroundColor: colors.background }}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Header isText titleText={'Account'} height={windowHeight(50)} image />
+        <Header isText titleText={"Account"} height={windowHeight(50)} image />
         {/* <View style={styles.header}>
           <Text style={styles.headerTxt}>Account</Text>
         </View> */}
@@ -150,22 +193,22 @@ export function PageList(props) {
           <TouchableOpacity style={styles.mainViewEdit}>
             <Text style={styles.mainViewEditTitleLog}>Log out</Text>
             {/* <DrawerArrow /> */}
-          {/* </TouchableOpacity> */} 
+          {/* </TouchableOpacity> */}
           {/* {token && ( */}
-            <View style={styles.pageList}>
-              <ProfileView colors={colors} goToEdit={goToEdit} />
-              {Data.accountData.map((item, key) => (
-                <MenuItem
-                  width={'100%'}
-                  icon={item.icon}
-                  text={item.title}
-                  navigationProps={props}
-                  onPress={() => goToScreen(item.screen, item.val)}
-                  fill={isDark ? appColors.white : appColors.black}
-                  count={count}
-                />
-              ))}
-            </View>
+          <View style={styles.pageList}>
+            <ProfileView colors={colors} goToEdit={goToEdit} />
+            {Data.accountData.map((item, key) => (
+              <MenuItem
+                width={"100%"}
+                icon={item.icon}
+                text={item.title}
+                navigationProps={props}
+                onPress={() => goToScreen(item.screen, item.val)}
+                fill={isDark ? appColors.white : appColors.black}
+                count={count}
+              />
+            ))}
+          </View>
           {/* )} */}
           {/* <View style={styles.menu}>
             <MenuItem

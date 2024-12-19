@@ -6,12 +6,33 @@ import {useValues} from '@utils/context';
 import {launchImageLibrary} from 'react-native-image-picker';
 import styles from './styles';
 import {getValue, setValue} from '@utils/localStorage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProfileView = props => {
   const char = props.data?.name.charAt(0);
   const {colors} = useTheme();
   const {isDark} = useValues();
   const [imageUri, setImageUri] = useState(null);
+
+  const [userInfo, setUserInfo] = useState();  
+  const getUserInfo = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem("googleUserInfo");
+      return userInfo != null ? JSON.parse(userInfo) : null;
+    } catch (error) {
+      console.error("Error retrieving user info:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const userInfo = await getUserInfo();
+      setUserInfo( userInfo.data.user);
+    };
+
+    fetchUserInfo();
+  }, []);
+
 
   useEffect(() => {
     const loadImageUri = async () => {
@@ -72,16 +93,19 @@ const ProfileView = props => {
           styles.img,
           {backgroundColor: isDark ? appColors.darkDrawer : appColors.white},
         ]}>
-        {imageUri ? (
-          <Image source={{uri: imageUri}} style={styles.image} />
+        {userInfo?.photo ? (
+          <Image source={{uri: userInfo?.photo}} style={styles.image} />
         ) : (
           <Text style={[styles.char, {color: colors.text}]}>{char || 'b'}</Text>
         )}
       </View>
       <Text style={[styles.name, {color: props.colors.text}]}>
-        {props.data?.name || 'baskar'}
+        {/* {props.data?.name || 'baskar'} */} {userInfo?.name}
       </Text>
-      <Text style={styles.demoMail}>{props.data?.email || 'example@example.com'}</Text>
+      <Text style={styles.demoMail}>
+        {/* {props.data?.email || 'example@example.com'} */}
+        {userInfo?.email}
+      </Text>
     </TouchableOpacity>
   );
 };

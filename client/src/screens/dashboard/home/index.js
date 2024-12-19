@@ -41,6 +41,7 @@ import styles from "./styles";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // categories
 
 const productsForYou = [
@@ -145,33 +146,51 @@ export function Home({ navigation }) {
     GoogleSignin.configure({
       webClientId:
         "323778747839-4e0g91eg4mpp4vucqgolcmh5mm78o9vs.apps.googleusercontent.com",
-
       // offlineAccess: true,
     });
   }, []);
 
+  const storeUserInfo = async (userInfo) => {
+    try{
+      await AsyncStorage.setItem("@userInfo", userInfo);
+    }catch(err){
+      console.log("Couldn't set user info");
+    }
+  }
+ 
   const GoogleSingUp = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const { idToken } = await GoogleSignin.signIn();
-      console.log("idToken:", idToken);
-      if (!idToken) {
-        throw new Error("Google Sign-In did not return an idToken.");
-      }
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      const userCredential = await auth().signInWithCredential(
-        googleCredential
-      );
-      console.log("User Info:", userCredential.user);
-      Alert.alert(
-        "Login Successful!",
-        `Welcome ${userCredential.user.displayName}`
-      );
+      const userInfo = await GoogleSignin.signIn();
+      const tokens = await GoogleSignin.getTokens(); 
+      // console.log(userInfo.data.user);
+      await AsyncStorage.setItem("@idToken", tokens.idToken);
+      await AsyncStorage.setItem("googleUserInfo", JSON.stringify(userInfo));
+      // console.log('User Info:', userInfo);
+      // console.log('Tokens:', tokens.accessToken); 
+      Alert.alert('Success', `Access Token: ${tokens.accessToken}`);
     } catch (error) {
-      console.error("Error during Google sign-in:", error);
-      Alert.alert("Error", error.message);
-    }
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        Alert.alert('Cancelled', 'User cancelled the login flow.');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        Alert.alert('In Progress', 'Sign-In is already in progress.');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('Error', 'Google Play Services not available.');
+      } else {
+        Alert.alert('Error', error.message);
+      }
+  }
   };
+
+  const handleLogout = async () => {
+    try {
+      await GoogleSignin.signOut();
+      navigation.navigate('Login')
+      console.log("User signed out");
+    } catch (error) {
+      console.error("Error during sign out:", error);
+    }
+  }
 
   // const pastOrders = [
   //   {
@@ -306,19 +325,6 @@ export function Home({ navigation }) {
     messageRef.current.animate();
   };
 
-  const categories = useSelector((data) => data.category.categories);
-  // console.log(categories);
-
-  const flatendeArr = categories?.flatMap((obj) => obj.data);
-
-  const getRandomItems = (array, count) => {
-    if (array.length <= count) return array; // Return the full array if it's smaller than or equal to the count
-    const shuffled = [...array].sort(() => 0.5 - Math.random()); // Shuffle the array
-    return shuffled.slice(0, count); // Select the first `count` items
-  };
-  const selectedItems = getRandomItems(flatendeArr, 7);
-  // console.log(selectedItems);
-
   return (
     <SafeAreaView style={GlobalStyle.container}>
       <Header navigation={navigation} />
@@ -334,11 +340,12 @@ export function Home({ navigation }) {
           // status={data?.categories_list.status}
           // title={data?.categories_list?.title}
         />
-        <TouchableOpacity onPress={GoogleSingUp}>
-          <Text style={{ color: "#000000", textAlign: "center", fontSize: 20 }}>
-            Google
-          </Text>
-        </TouchableOpacity>
+        {/* <TouchableOpacity onPress={GoogleSingUp}>
+        <Text style={{ color: '#000000', textAlign: 'center', fontSize: 20 }}>Google</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleLogout}>
+        <Text style={{ color: '#000000', textAlign: 'center', fontSize: 20 }}>Log out</Text>
+      </TouchableOpacity> */}
         <View
           style={[
             styles.lowestPrice,
@@ -353,7 +360,7 @@ export function Home({ navigation }) {
             navigation={navigation}
             title={"Products for you!"}
             subtitle={"This product are curated for special you"}
-            data={selectedItems}
+            data={productsForYou}
             from="offers"
             showOffer
           />

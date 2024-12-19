@@ -9,6 +9,7 @@ import {
   WishList,
   Password,
   Download,
+  SignOut
 } from '@utils/icons';
 
 module.exports = {
@@ -192,6 +193,12 @@ module.exports = {
       title: 'Saved Address',
       icon: <Location />,
       screen: 'SelectAddress',
+      val: '',
+    },
+    {
+      title: 'Signout',
+      icon: <SignOut />,
+      screen: '',
       val: '',
     },
     // {

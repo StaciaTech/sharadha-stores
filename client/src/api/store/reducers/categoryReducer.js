@@ -1,6 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { categoryData } from "../actions";
-import images from "@utils/images";
+import {createSlice} from '@reduxjs/toolkit';
+import {categoryData} from '../actions';
+import images from  '@utils/images';
 
 const initialState = {
   loading: false,
@@ -9,9 +9,9 @@ const initialState = {
       type: "podiItems",
       data: [
         {
-          id: "#podi01",
+          id: '#podi01',
           name: "Dhal Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder1,
           quantity: "500",
           weight: "500",
@@ -19,9 +19,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi02",
+          id: '#podi02',
           name: "Idly Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder2,
           quantity: "250",
           weight: "250",
@@ -29,9 +29,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi03",
+          id: '#podi03',
           name: "Karuvapillai Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder3,
           quantity: "300",
           weight: "300",
@@ -39,9 +39,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi04",
+          id: '#podi04',
           name: "Angaya Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder4,
           quantity: "400",
           weight: "400",
@@ -49,9 +49,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi05",
+          id: '#podi05',
           name: "Ellu Idly Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder5,
           quantity: "200",
           weight: "200",
@@ -59,9 +59,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi06",
+          id: '#podi06',
           name: "Coriander Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder6,
           quantity: "500",
           weight: "500",
@@ -69,9 +69,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi07",
+          id: '#podi07',
           name: "Rasam Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder7,
           quantity: "300",
           weight: "300",
@@ -79,9 +79,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi08",
+          id: '#podi08',
           name: "Garlic Dhal Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder8,
           quantity: "250",
           weight: "250",
@@ -89,9 +89,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi09",
+          id: '#podi09',
           name: "Garlic Idly Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder9,
           quantity: "500",
           weight: "500",
@@ -99,9 +99,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi10",
+          id: '#podi10',
           name: "Puliyodharai Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder10,
           quantity: "200",
           weight: "200",
@@ -109,9 +109,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi11",
+          id: '#podi11',
           name: "Ellu",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder11,
           quantity: "300",
           weight: "300",
@@ -119,9 +119,9 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi12",
+          id: '#podi12',
           name: "Coconut Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder12,
           quantity: "250",
           weight: "250",
@@ -129,22 +129,22 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#podi13",
+          id: '#podi13',
           name: "Sambar Powder",
-          type: "podiItems",
+          type: 'podiItems',
           original_url: images.powder13,
           quantity: "100",
           weight: "100",
           price: 50,
           sale_price: 230,
         },
-      ],
+      ]
     },
     {
       type: "vathal",
       data: [
         {
-          id: "#vathal1",
+          id: '#vathal1',
           name: "Manathakali Vathal",
           type: "vathal",
           original_url: images.vathal1,
@@ -154,7 +154,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal2",
+          id: '#vathal2',
           name: "Sundaikai Vathal",
           type: "vathal",
           original_url: images.vathal2,
@@ -164,7 +164,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal3",
+          id: '#vathal3',
           name: "More Mellkai",
           type: "vathal",
           original_url: images.vathal3,
@@ -174,7 +174,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal4",
+          id: '#vathal4',
           name: "Kathirikai Vathal",
           type: "vathal",
           original_url: images.vathal4,
@@ -184,7 +184,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal5",
+          id: '#vathal5',
           name: "Sukkangai Vathal",
           type: "vathal",
           original_url: images.vathal5,
@@ -194,7 +194,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal6",
+          id: '#vathal6',
           name: "Kothavarangai Vathal",
           type: "vathal",
           original_url: images.vathal6,
@@ -204,7 +204,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal7",
+          id: '#vathal7',
           name: "Manathakali Vathal No Salt",
           type: "vathal",
           original_url: images.vathal7,
@@ -214,7 +214,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal8",
+          id: '#vathal8',
           name: "Sundaikai Vathal No Salt",
           type: "vathal",
           original_url: images.vathal8,
@@ -224,7 +224,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal9",
+          id: '#vathal9',
           name: "Vendakai Vathal",
           type: "vathal",
           original_url: images.vathal9,
@@ -234,7 +234,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal10",
+          id: '#vathal10',
           name: "Pavakkai Vathal",
           type: "vathal",
           original_url: images.vathal10,
@@ -244,7 +244,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vathal11",
+          id: '#vathal11',
           name: "Thamarai Thandu Vathal",
           type: "vathal",
           original_url: images.vathal11,
@@ -253,13 +253,13 @@ const initialState = {
           price: 190,
           sale_price: 230,
         },
-      ],
+      ]
     },
     {
       type: "vadam",
-      data: [
+      data:[
         {
-          id: "#vadam1",
+          id: '#vadam1',
           name: "Omapodi Vadam",
           type: "vadam",
           original_url: images.vadam1,
@@ -269,7 +269,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam2",
+          id: '#vadam2',
           name: "Elai Vadam Big",
           type: "vadam",
           original_url: images.vadam2,
@@ -279,7 +279,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam3",
+          id: '#vadam3',
           name: "Tomato Vadam",
           type: "vadam",
           original_url: images.vadam3,
@@ -289,7 +289,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam4",
+          id: '#vadam4',
           name: "Pudina Vadam",
           type: "vadam",
           original_url: images.vadam4,
@@ -299,7 +299,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam5",
+          id: '#vadam5',
           name: "Seeraga Vadam",
           type: "vadam",
           original_url: images.vadam5,
@@ -309,7 +309,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam6",
+          id: '#vadam6',
           name: "Potato Vadam",
           type: "vadam",
           original_url: images.vadam6,
@@ -319,7 +319,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam7",
+          id: '#vadam7',
           name: "Wheel Vadam",
           type: "vadam",
           original_url: images.vadam7,
@@ -329,7 +329,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam8",
+          id: '#vadam8',
           name: "Onion Vadam",
           type: "vadam",
           original_url: images.vadam8,
@@ -339,7 +339,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam9",
+          id: '#vadam9',
           name: "Jeversi Vadam",
           type: "vadam",
           original_url: images.vadam9,
@@ -349,7 +349,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam10",
+          id: '#vadam10',
           name: "Elai Vadam Small",
           type: "vadam",
           original_url: images.vadam10,
@@ -359,7 +359,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam11",
+          id: '#vadam11',
           name: "Carrot Vadam",
           type: "vadam",
           original_url: images.vadam11,
@@ -369,7 +369,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam12",
+          id: '#vadam12',
           name: "Chili Vadam",
           type: "vadam",
           original_url: images.vadam12,
@@ -379,7 +379,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam13",
+          id: '#vadam13',
           name: "Beetroot Vadam",
           type: "vadam",
           original_url: images.vadam13,
@@ -389,7 +389,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam14",
+          id: '#vadam14',
           name: "Somas Vadam",
           type: "vadam",
           original_url: images.vadam14,
@@ -399,7 +399,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam15",
+          id: '#vadam15',
           name: "Finger Vadam",
           type: "vadam",
           original_url: images.vadam15,
@@ -409,7 +409,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam16",
+          id: '#vadam16',
           name: "Green Chili Vadam",
           type: "vadam",
           original_url: images.vadam16,
@@ -419,7 +419,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam17",
+          id: '#vadam17',
           name: "Neetu Vadam",
           type: "vadam",
           original_url: images.vadam17,
@@ -429,7 +429,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam18",
+          id: '#vadam18',
           name: "Ribbon Vadam",
           type: "vadam",
           original_url: images.vadam18,
@@ -439,7 +439,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam19",
+          id: '#vadam19',
           name: "Kuzhambu Vadam",
           type: "vadam",
           original_url: images.vadam19,
@@ -449,7 +449,7 @@ const initialState = {
           sale_price: 230,
         },
         {
-          id: "#vadam20",
+          id: '#vadam20',
           name: "Semiya Vadam",
           type: "vadam",
           original_url: images.vadam20,
@@ -458,16 +458,16 @@ const initialState = {
           price: 150,
           sale_price: 230,
         },
-      ],
-    },
+      ]
+    }
   ],
 };
 
 const categorySlice = createSlice({
-  name: "category",
+  name: 'category',
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     //Category Cases
     builder.addCase(categoryData.pending, (state, action) => {
       state.loading = true;

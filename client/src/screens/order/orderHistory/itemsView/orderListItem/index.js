@@ -7,6 +7,7 @@ import { useValues } from "@utils/context";
 import styles from "./styles";
 import { windowHeight } from "../../../../../theme/appConstant";
 import images from "@utils/images";
+import items from "../../../../products/productList/productsView/items";
 const OrderListItem = ({
   item,
   isDark,
@@ -47,11 +48,13 @@ const OrderListItem = ({
 
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           {/* <Text style={styles.statusTitle}>Status:</Text> */}
-          <Image source={images.s1} />
+          {
+            item.status === 'delivered' ? <Image source={images.s1} /> : item.status === 'cancelled' ? <Image source={images.s4} /> : item.status === 'initiated' ? <Image source={images.s2} /> : <Image source={images.s3} />
+          }
           <Text style={styles.paid}>
             {" "}
             {/* {capitalizeFirstLetter(item.order_status.name)} */}
-            Delivered
+           {item.status}
           </Text>
         </View>
       </View>

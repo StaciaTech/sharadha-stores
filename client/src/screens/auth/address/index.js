@@ -1,24 +1,19 @@
 import { View, Text } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@commonComponents";
 import { SafeAreaView } from "react-native";
-import { AuthContainer } from "../../../otherComponents";
-import { GlobalStyle } from "@style";
-import appColors from "@theme/appColors";
-import { useTheme } from "@react-navigation/native";
 import { AnimatedAlert, Button } from "@commonComponents";
 import styles from "./styles";
-import { Pressable } from "react-native";
-import { ScrollView } from "react-native";
+import { Pressable, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import phoneNumberInput from "../registration/detailsView/phoneNumberInput";
-import PhoneInput from "react-native-phone-number-input";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GlobalStyle } from "@style";
 
-export default function authAddressForm() {
+export default function AuthAddressForm() {
   const [formStep, setFormStep] = useState(1);
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
+  const [userInfo, setUserInfo] = useState();
   const navigation = useNavigation();
   const tenDigitRegex = /^\d{10}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,9 +28,10 @@ export default function authAddressForm() {
   };
 
   const SaveAddress = async (addressObj) => {
+    console.log(addressObj);
     try {
-      await AsyncStorage.setItem("addresses", addressObj);
-      console.log("address saved");
+      await AsyncStorage.setItem("addresses", JSON.stringify([addressObj]));
+      console.log("Address saved", [addressObj]);
     } catch (error) {
       console.log(error);
     }
@@ -74,9 +70,9 @@ export default function authAddressForm() {
         setFormStep(2);
       }
     } else if (formStep === 2) {
-      if (!form.houseNo) {
+      if (!form.title) {
         setErrors((prev) => {
-          return { ...prev, houseNo: "Enter House Number" };
+          return { ...prev, title: "Enter House Number" };
         });
         isValid = false;
       } else if (!form.buildingName) {
@@ -89,14 +85,14 @@ export default function authAddressForm() {
           return { ...prev, city: "Enter City Name" };
         });
         isValid = false;
-      } else if (!form.pinCode) {
+      } else if (!form.pincode) {
         setErrors((prev) => {
-          return { ...prev, pinCode: "Enter Pin Code" };
+          return { ...prev, pincode: "Enter Pin Code" };
         });
         isValid = false;
-      } else if (!form.state) {
+      } else if (!form.state_id) {
         setErrors((prev) => {
-          return { ...prev, state: "Enter State Name" };
+          return { ...prev, state_id: "Enter State Name" };
         });
         isValid = false;
       }
@@ -116,11 +112,41 @@ export default function authAddressForm() {
     }
   };
 
+  const getUserInfo = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem("googleUserInfo");
+      return userInfo != null ? JSON.parse(userInfo) : null;
+    } catch (error) {
+      console.error("Error retrieving user info:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const userInfo = await getUserInfo();
+      const storedAddress = await AsyncStorage.getItem("addresses");
+      const parsedAddress = storedAddress ? JSON.parse(storedAddress) : {};
+
+      setUserInfo(userInfo?.data?.user || {});
+      setForm({
+        name: userInfo?.data?.user?.name || "",
+        email: userInfo?.data?.user?.email || "",
+        phone: "",
+        houseNo: parsedAddress.houseNo || "",
+        buildingName: parsedAddress.buildingName || "",
+        address: parsedAddress.address || "",
+        city: parsedAddress.city || "",
+        pinCode: parsedAddress.pinCode || "",
+        state: parsedAddress.state || "",
+        country: parsedAddress.country || "",
+      });
+    };
+
+    fetchUserInfo();
+  }, []);
+
   return (
     <SafeAreaView style={GlobalStyle.authMainView}>
-      {/* <AuthContainer
-        description="Please provide your basic information to proceed with accessing your account."
-        container={ */}
       <View style={styles.addressFromContainer}>
         <ScrollView contentContainerStyle={styles.scrollViewContainer}>
           <View>
@@ -130,8 +156,7 @@ export default function authAddressForm() {
                 <Text style={styles.mainTitleBlack}>Stores</Text>
               </View>
               <Text style={styles.mainDescription}>
-                Please provide your basic information to proceed with accessing
-                your account.
+                Please provide your basic information to proceed with accessing your account.
               </Text>
             </View>
 
@@ -156,12 +181,6 @@ export default function authAddressForm() {
                   top={1}
                   error={errors.phone}
                 />
-                {/* <PhoneInput
-                onChangeText={(text) => {
-                  onChange({ name: "phone", text });
-                }}
-                defaultCode="IN"
-              /> */}
                 <Text style={styles.addressInputTitles}>Email</Text>
                 <Input
                   keyboardType={"email"}
@@ -175,17 +194,16 @@ export default function authAddressForm() {
               </View>
             ) : (
               <View>
-                <Text style={styles.addressInputTitles}>House No</Text>
+                <Text style={styles.addressInputTitles}>Address Type</Text>
                 <Input
                   onChangeText={(value) => {
-                    onChange({ name: "houseNo", value });
+                    onChange({ name: "title", value });
                   }}
-                  error={errors.houseNo}
+                  placeholder={'Title (Home, Office, Work)'}
+                  error={errors.title}
                   top={1}
                 />
-                <Text style={styles.addressInputTitles}>
-                  Building Name (Optional)
-                </Text>
+                <Text style={styles.addressInputTitles}>Building Name (Optional)</Text>
                 <Input
                   onChangeText={(value) => {
                     onChange({ name: "buildingName", value });
@@ -196,7 +214,7 @@ export default function authAddressForm() {
                 <Text style={styles.addressInputTitles}>Address</Text>
                 <Input
                   onChangeText={(value) => {
-                    onChange({ name: "address", value });
+                    onChange({ name: "street", value });
                   }}
                   top={1}
                   error={errors.address}
@@ -212,7 +230,7 @@ export default function authAddressForm() {
                 <Text style={styles.addressInputTitles}>Pin code</Text>
                 <Input
                   onChangeText={(value) => {
-                    onChange({ name: "pinCode", value });
+                    onChange({ name: "pincode", value });
                   }}
                   top={1}
                   error={errors.pinCode}
@@ -220,7 +238,7 @@ export default function authAddressForm() {
                 <Text style={styles.addressInputTitles}>State</Text>
                 <Input
                   onChangeText={(value) => {
-                    onChange({ name: "state", value });
+                    onChange({ name: "state_id", value });
                   }}
                   top={1}
                   error={errors.state}
@@ -228,7 +246,7 @@ export default function authAddressForm() {
                 <Text style={styles.addressInputTitles}>Country</Text>
                 <Input
                   onChangeText={(value) => {
-                    onChange({ name: "country", value });
+                    onChange({ name: "country_id", value });
                   }}
                   top={1}
                   error={errors.state}
@@ -240,7 +258,7 @@ export default function authAddressForm() {
             <Pressable onPress={CloseHandler}>
               <View style={styles.addressCancelBtn}>
                 <Text style={{ color: "#17349D" }}>
-                  {formStep === 1 ? "Cancle" : "Back"}
+                  {formStep === 1 ? "Cancel" : "Back"}
                 </Text>
               </View>
             </Pressable>
@@ -254,8 +272,6 @@ export default function authAddressForm() {
           </View>
         </ScrollView>
       </View>
-      {/* }
-      /> */}
     </SafeAreaView>
   );
 }

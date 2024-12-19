@@ -100,18 +100,13 @@ export default styles = StyleSheet.create({
     marginHorizontal: windowWidth(20),
   },
   cod: {
+    backgroundColor: "#ffffff",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    padding: 16,
-    backgroundColor: "#ffffff",
+    padding: 10,
     alignItems: "center",
     justifyContent: "center",
     marginTop: windowHeight(10),
-    shadowColor: "#0003", //r of the shadow
-    shadowOffset: { width: 0, height: -4 }, // Horizontal and vertical offset
-    shadowOpacity: 0.75, // Opacity of the shadow
-    shadowRadius: 4, // Blur radius
-    elevation: 4,
   },
   codTxt: {
     color: "#000000",

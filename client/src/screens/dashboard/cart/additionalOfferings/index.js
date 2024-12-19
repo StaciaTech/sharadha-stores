@@ -13,7 +13,6 @@ import { windowHeight, windowWidth } from "@theme/appConstant";
 import appColors from "@theme/appColors";
 import { Button } from "@commonComponents";
 import axios from "axios";
-// import MoneyIcon from "../../../../assets/icons/MoneyIcon";
 
 // import { google } from "googleapis";
 
@@ -22,10 +21,13 @@ export default additionalOfferings = ({
   openAddressModal,
   placeOrder,
   item,
+  defaultAddress
 }) => {
   const [name, setName] = useState("raju bhai");
   const [email, setEmail] = useState("rajubhai@gmail.com");
   const [address, setAddress] = useState("padi");
+
+  console.log("78787878787", defaultAddress);
   // https://sheets.googleapis.com/v4/spreadsheets/1mLKjCq0azrghc4pklSFtpSuwE_59huN2rsCaMTVZcXE/values/Sheet1:append?valueInputOption=USER_ENTERED&key=AIzaSyCSemj26tnLqXdVtKHrvQU-BfY0_NnnTgYz
   const sheetUrl =
     "https://sheets.googleapis.com/v4/spreadsheets/1mLKjCq0azrghc4pklSFtpSuwE_59huN2rsCaMTVZcXE/values/Sheet1:append?valueInputOption=USER_ENTERED&key=AIzaSyCSemj26tnLqXdVtKHrvQU-BfY0_NnnTgY";
@@ -101,8 +103,8 @@ export default additionalOfferings = ({
 
   const makePhoneCall = (phoneNumber) => {
     const phoneUrl = `tel:${phoneNumber}`;
-    Linking.openURL(phoneUrl).catch((err) =>
-      console.error("Error occurred while trying to make a phone call:", err)
+    Linking.openURL(phoneUrl).catch(err =>
+      console.error('Error occurred while trying to make a phone call:', err)
     );
   };
   return (
@@ -117,8 +119,8 @@ export default additionalOfferings = ({
         <View style={styles.callBox}>
           <Call />
         </View>
-        <TouchableOpacity onPress={() => makePhoneCall("+916374588616")}>
-          <Text style={styles.number}>+91 6374588616 </Text>
+        <TouchableOpacity onPress={() => makePhoneCall(`+91${defaultAddress?.phone}`)}>
+          <Text style={styles.number}>+91 {defaultAddress?.phone} </Text>
         </TouchableOpacity>
       </View>
       <ScrollView
@@ -159,11 +161,11 @@ export default additionalOfferings = ({
         <TouchableOpacity onPress={() => setOpenAddressModal(true)}>
           <Text style={styles.addressDesc}>
             {[
-              item?.street,
-              item?.country_id,
-              item?.state_id,
-              item?.city,
-              item?.pincode,
+              defaultAddress?.street,
+              defaultAddress?.country_id,
+              defaultAddress?.state_id,
+              defaultAddress?.city,
+              defaultAddress?.pincode,
             ]
               .filter(Boolean)
               .join(", ")}
@@ -177,7 +179,6 @@ export default additionalOfferings = ({
         onPress={placeOrder}
       />
       <View style={styles.cod}>
-        {/* <MoneyIcon /> */}
         <Text style={styles.codTxt}>Only Cash On Delivery available</Text>
       </View>
     </View>

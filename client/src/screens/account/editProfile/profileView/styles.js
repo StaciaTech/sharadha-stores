@@ -44,6 +44,6 @@ export default styles = StyleSheet.create({
   image: {
     width: windowWidth(70),
     height: windowHeight(70),
-    resizeMode: 'stretch',
+    resizeMode: 'cover',
   },
 });

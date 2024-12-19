@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { removeAddress } from "../../api/store/reducers/deliveryAddReducer";
 
 export function Address({
+  name,
   id,
   borderColor,
   onPress,
@@ -70,8 +71,9 @@ export function Address({
         >
           {title}
         </Text>
+       
         <Text style={[styles.add, { textAlign: textRTLStyle }]}>
-          {street +
+          {name + ", " + street +
             ", " +
             city +
             ", " +

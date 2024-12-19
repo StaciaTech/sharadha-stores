@@ -7,12 +7,31 @@ import {useValues} from '@utils/context';
 import appColors from '@theme/appColors';
 import {getValue} from '@utils/localStorage';
 import styles from './styles';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default profileView = props => {
   const {self} = useSelector(state => state.account);
   const name = self?.name?.charAt(0);
   const {colors} = useTheme();
   const {viewRTLStyle, textRTLStyle, isDark} = useValues();
+  const [userInfo, setUserInfo] = useState();  
+  const getUserInfo = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem("googleUserInfo");
+      return userInfo != null ? JSON.parse(userInfo) : null;
+    } catch (error) {
+      console.error("Error retrieving user info:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const userInfo = await getUserInfo();
+      setUserInfo( userInfo.data.user);
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const [imageUri, setImageUri] = useState(null);
   useEffect(() => {
@@ -39,6 +58,8 @@ export default profileView = props => {
     }),
   );
 
+  // console.log(userInfo.photo);
+
   return (
     <TouchableOpacity
       onPress={props.goToEdit}
@@ -56,8 +77,8 @@ export default profileView = props => {
             styles.profileImg,
             {backgroundColor: isDark ? appColors.darkDrawer : appColors.white},
           ]}>
-          {imageUri ? (
-            <Image source={{uri: imageUri}} style={styles.image} />
+          {userInfo?.photo ? (
+            <Image source={{uri: userInfo?.photo}} style={styles.image} />
           ) : (
             <Text style={[styles.text, {color: colors.text}]}>{name || 'b'}</Text>
           )}
@@ -68,10 +89,10 @@ export default profileView = props => {
               styles.name,
               {color: props.colors.text, textAlign: textRTLStyle},
             ]}>
-            {self?.name || 'baskar'}
+            {/* {self?.name || 'baskar'} */} {userInfo?.name}
           </Text>
           <Text style={[styles.email, {textAlign: textRTLStyle}]}>
-            {self?.email || 'example@example.com'}
+            {/* {self?.email || 'example@example.com'} */} {userInfo?.email}
           </Text>
         </View>
       </View>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { Button, Input } from "@commonComponents";
 import { HidePassword, ShowPassword, AtSign } from "@utils/icons";
 import appColors from "@theme/appColors";
@@ -13,48 +13,50 @@ import { Pressable } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import PhoneNumberInput from "../../registration/detailsView/phoneNumberInput";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default detailsView = (props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
   const navigation = useNavigation();
-
+  const [type, setType] = useState();
   const visiblePassword = () => {
     setShowPassword(!showPassword);
   };
-  React.useEffect(() => {
-    GoogleSignin.configure({
-      webClientId:
-        "901757209162-akd7oe3jmmbtbu71oitm0ksdelb7jltr.apps.googleusercontent.com",
-      offlineAccess: true,
-    });
-  }, []);
 
+   React.useEffect(() => {
+     GoogleSignin.configure({
+       webClientId:
+         "323778747839-4e0g91eg4mpp4vucqgolcmh5mm78o9vs.apps.googleusercontent.com",
+       // offlineAccess: true,
+     });
+   }, []);
+ 
   const GoogleSingUp = async () => {
     try {
-      // Step 1: Sign in with Google
       await GoogleSignin.hasPlayServices();
-      const { idToken } = await GoogleSignin.signIn();
-
-      // Step 2: Create a Firebase credential with the Google token
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-      // Step 3: Sign in with Firebase using the credential
-      const userCredential = await auth().signInWithCredential(
-        googleCredential
-      );
-
-      console.log("User Info:", userCredential.user);
-      Alert.alert(
-        "Login Successful!",
-        `Welcome ${userCredential.user.displayName}`
-      );
+      const userInfo = await GoogleSignin.signIn();
+      const tokens = await GoogleSignin.getTokens(); 
+      console.log(userInfo.data.user);
+      await AsyncStorage.setItem("@idToken", tokens.idToken);
+      await AsyncStorage.setItem("googleUserInfo", JSON.stringify(userInfo));
+      // console.log('User Info:', userInfo);
+      // console.log('Tokens:', tokens.accessToken); 
+      Alert.alert('Logged in successfully');
+      navigation.navigate("AuthAddressForm");
     } catch (error) {
-      console.error("Error during Google sign-in:", error);
-      Alert.alert("Error", error.message);
-    }
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        Alert.alert('Cancelled', 'User cancelled the login flow.');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        Alert.alert('In Progress', 'Sign-In is already in progress.');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('Error', 'Google Play Services not available.');
+      } else {
+        Alert.alert('Error', error.message);
+      }
+  }
   };
-
   const onChange = ({ name, value }) => {
     setForm({ ...form, [name]: value });
     if (value !== "") {

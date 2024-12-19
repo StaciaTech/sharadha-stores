@@ -100,6 +100,8 @@ export function CartList({ navigation }) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [showOrderPlacedPopUp, setShowOrderPlacedPopUp] = useState(false);
   const [selectedAddrress, setSelectedAddress] = useState();
+  const [defaultAddress, setDefaultAddress] = useState();
+  const [userInfo, setUserInfo] = useState();
   // const orderId = selectedAddrress?.phone.slice(6, 10);
   const { offersParams, sectionOneParams, sectionThreeParams } = useSelector(
     (state) => state.home
@@ -111,11 +113,31 @@ export function CartList({ navigation }) {
   }, [cartList]);
 
   useEffect(() => {
-    AsyncStorage.getItem("addresses").then((data) => {
-      setAddresses(JSON.parse(data));
-      console.log("address", JSON.parse(data));
-    });
+    AsyncStorage.getItem("addresses")
+      .then((data) => {
+        const parsedData = JSON.parse(data); // Parse the data to an array
+        setAddresses(parsedData); // Set all addresses
+        if (parsedData && parsedData.length > 0) {
+          setDefaultAddress(parsedData[0]); // Set the first address as default if it exists
+        }
+        console.log("address", parsedData); // Log the parsed data
+      })
+      .catch((error) => {
+        console.error("Error retrieving addresses from AsyncStorage", error);
+      });
   }, []);
+
+  // useEffect(() => {
+  //   AsyncStorage.getItem("googleUserInfo")
+  //     .then((data) => {
+  //       const googleUserInfo = JSON.parse(data);
+  //       setUserInfo(googleUserInfo.user);
+  //       console.log("googleUserInfo", googleUserInfo.user);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error retrieving addresses from AsyncStorage", error);
+  //     });
+  // }, []);
 
   // useEffect(() => {
   //   AsyncStorage.getItem("addresses").then((data) => {
@@ -250,7 +272,7 @@ export function CartList({ navigation }) {
   // generete orderId
   const generateOrderId = (phNo) => {
     const timestamp = Date.now().toString();
-    return `OID${timestamp}${phNo.slice(6, 10)}`;
+    return `OID${phNo.slice(6, 10)}${timestamp}`;
   };
 
   // place order
@@ -274,26 +296,28 @@ export function CartList({ navigation }) {
       ];
 
       const items = cartList.map((item) => [
-        generateOrderId("9876543210"),
-        generateCusId("9876543210"),
-        "baskar",
+        generateOrderId(defaultAddress.phone),
+        generateCusId(defaultAddress.phone),
+        defaultAddress?.name,
         item.name,
         item.original_url,
         item.weight,
         item.quantity,
         item.price,
         [
-          selectedAddrress.street,
-          selectedAddrress.country_id,
-          selectedAddrress.state_id,
-          selectedAddrress.city,
-          selectedAddrress.pincode,
+          defaultAddress.street,
+          defaultAddress.country_id,
+          defaultAddress.state_id,
+          defaultAddress.city,
+          defaultAddress.pincode,
         ]
           .filter(Boolean)
           .join(", "),
-        selectedAddrress.phone,
+        // defaultAddress,
+        defaultAddress.phone,
         selectedOption,
         totalAmount,
+        'initiated' 
       ]);
 
       // const res = [
@@ -321,9 +345,8 @@ export function CartList({ navigation }) {
       // })
       // formData.append('cusname', 'baskar');
       // formData.append('products', JSON.stringify(items));
-      console.log(selectedAddrress);
       const res = await axios.post(
-        "http://sharadha-stores-1279781826.ap-south-1.elb.amazonaws.com/user/write-sheet",
+        "http://192.168.0.115:7000/user/place-order",
         {
           values: items,
         }
@@ -331,6 +354,8 @@ export function CartList({ navigation }) {
       if (res.status) {
         console.log("success");
         setShowOrderPlacedPopUp(true);
+        clearCart();
+        navigation.navigate('Home');
       } else {
         console.log(res.status);
       }
@@ -408,6 +433,7 @@ export function CartList({ navigation }) {
               openAddressModal={openAddressModal}
               placeOrder={placeOrder}
               item={selectedAddrress}
+              defaultAddress={defaultAddress}
             />
           </ScrollView>
         ) : (
@@ -445,7 +471,7 @@ export function CartList({ navigation }) {
                 paddingVertical: 15,
               }}
               onPress={() => {
-                setSelectedAddress(item);
+                setDefaultAddress(item);
                 setOpenAddressModal(false);
               }}
             >

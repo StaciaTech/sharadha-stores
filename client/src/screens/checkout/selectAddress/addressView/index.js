@@ -24,6 +24,8 @@ export default addressView = props => {
     })
   }, []);
 
+  console.log("------", addresses);
+
   return (
     <ScrollView
       contentContainerStyle={[
@@ -51,6 +53,7 @@ export default addressView = props => {
                   : appColors.gray
               }
               id={index}
+              name={item?.name}
               city={item?.city}
               country={item?.country_id}
               onPress={() => props.getVal(item)}
