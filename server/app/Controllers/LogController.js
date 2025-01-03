@@ -43,6 +43,8 @@ const sheetName = 'Sheet3'
 
 const placeOrder = async (req, res) => {
 
+    console.log("---- orer placed ----- ")
+
     const { values } = req.body
 
 
@@ -73,7 +75,7 @@ const placeOrder = async (req, res) => {
             })
         }
 
-        const columnsToCheck = [0, 1, 2, 3, 10, 11, 12, 13, 15, 16]
+        const columnsToCheck = [0, 1, 2, 3, 10, 11, 12, 13, 14, 15, 16]
 
         const transformedValues = removeDuplicatesInCells(values, columnsToCheck)
 
@@ -198,12 +200,14 @@ const historyOrder = async (req, res) => {
                 customerId: structuredData[order][0].customerId,
                 customerName: structuredData[order][0].customerName,
                 date: structuredData[order][0].date,
+                storeAddress: structuredData[order][0].storeAddress,
                 deliveryMode: structuredData[order][0].deliveryMode,
+                orderType: structuredData[order][0].orderType,
                 address: structuredData[order][0].address,
                 phoneNo: structuredData[order][0].phoneNo,
                 status: structuredData[order][0].status,
                 grandTotal: structuredData[order][0].total,
-                transcation: structuredData[order][0].Transcation,
+                transcation: structuredData[order][0].transcation ? structuredData[order][0].transcation : null,
                 products,
             })
         }
