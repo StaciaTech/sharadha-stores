@@ -73,7 +73,7 @@ const placeOrder = async (req, res) => {
             })
         }
 
-        const columnsToCheck = [0, 1, 2, 3, 9, 10, 11, 12, 13]
+        const columnsToCheck = [0, 1, 2, 3, 10, 11, 12, 13, 15, 16]
 
         const transformedValues = removeDuplicatesInCells(values, columnsToCheck)
 
@@ -189,6 +189,7 @@ const historyOrder = async (req, res) => {
                     price: ele.price,
                     itemTotal: ele.itemTotal,
                     imageNo: ele.imgNo,
+                    unit: ele.unit
                 })
             })
 
