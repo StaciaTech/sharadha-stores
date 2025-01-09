@@ -75,7 +75,7 @@ const placeOrder = async (req, res) => {
             })
         }
 
-        const columnsToCheck = [0, 1, 2, 3, 10, 11, 12, 13, 14, 15, 16]
+        const columnsToCheck = [0, 1, 2, 3, 11, 12, 13, 14, 15, 16, 17]
 
         const transformedValues = removeDuplicatesInCells(values, columnsToCheck)
 
@@ -186,6 +186,7 @@ const historyOrder = async (req, res) => {
             structuredData[order].forEach(ele => {
                 products.push({
                     name: ele.productName,
+                    productId: ele.productId,
                     weight: ele.weight,
                     quantity: ele.quantity,
                     price: ele.price,
