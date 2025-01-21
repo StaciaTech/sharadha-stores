@@ -9,6 +9,8 @@ import ejs from "ejs"
 import nodeMailer from "nodemailer"
 import path from 'path'
 import { fileURLToPath } from 'url'
+import moment from 'moment'
+
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -37,19 +39,17 @@ const authenticate = async () => {
     return auth.getClient()
 }
 
+const currentMonth = moment().format("MMMM")
+
 
 const spreadsheetId = process.env.SPREADSHEETID
-const sheetName = 'Sheet3'
+const sheetName = currentMonth
 
 const placeOrder = async (req, res) => {
 
-    console.log("---- orer placed ----- ")
-
     const { values } = req.body
 
-
     try {
-
 
         const removeDuplicatesInCells = (arr, columnsToCheck) => {
             const seen = {} // Track seen values for specified columns
@@ -79,21 +79,20 @@ const placeOrder = async (req, res) => {
 
         const transformedValues = removeDuplicatesInCells(values, columnsToCheck)
 
-        // return res.status(200).send({ success: true, message: transformedValues })
-
-        // console.log(transformedValues)
-
         const auth = await authenticate()
         const sheets = google.sheets({ version: 'v4', auth })
-        // const range = 'Sheet1'
         const range = sheetName
         const valueInputOption = 'USER_ENTERED'
 
-        // Data to write
-
-
         // Prepare request
         const resource = { values: transformedValues }
+
+        const customerMobileNo = transformedValues[0][13]
+        const storeAddress = transformedValues[0][11]
+        const orderId = transformedValues[0][0]
+        const customerName = transformedValues[0][2]
+        const customerAddress = transformedValues[0][12]
+        const totalAmount = transformedValues[0][15]
 
         // Append data to the sheet
         const result = await sheets.spreadsheets.values.append({
@@ -103,20 +102,46 @@ const placeOrder = async (req, res) => {
             resource,
         })
 
-        // console.log(`Updated cells: ${result.data.updates.updatedCells}`)
+
+        let mobNo
+        if (storeAddress == "Valasaravakkam") {
+            mobNo = process.env.VALASARAVAKKAM_STORE_MOBILE_NO
+        } else {
+            mobNo = process.env.WESTMAMBALAM_MOBILE_NO
+        }
+
+        //#region  - store logic
+        const params = {
+            Message: `OrderId: ${orderId},\n Customer Name: ${customerName},\n Customer Number: +91${customerMobileNo},\n Customer Address: ${customerAddress},\n Total Order Amount: ₹ ${totalAmount}`,
+            PhoneNumber: `+91${mobNo}`, // E.164 format, e.g., +1234567890
+        }
+
+        const command = new PublishCommand(params)
+        const response = await snsClient.send(command)
+
+        //#endregion
+
+        if (customerMobileNo) {
+
+            const params = {
+                Message: `Your order Id ${orderId} has been successfully placed. The store will reach out to you soon, For assistance, call +91${mobNo}, Sharadha Stores ${storeAddress} branch.`,
+                PhoneNumber: `+91${customerMobileNo}`, // E.164 format, e.g., +1234567890
+            }
+
+            const command = new PublishCommand(params)
+            const response = await snsClient.send(command)
+
+        }
 
         return res.status(200).send({ success: true, message: "success" })
 
     } catch (err) {
-        // console.log(err)
         return res.status(200).send({ success: false, message: "internal server error" })
     }
 
 }
 
 const historyOrder = async (req, res) => {
-
-    console.log("--- order history ---")
 
     try {
 
@@ -134,7 +159,7 @@ const historyOrder = async (req, res) => {
         // Loop through each sheet and retrieve its data
         for (const sheet of sheetsInfo) {
             const sheetName = sheet.properties.title
-            // console.log(`Fetching data from sheet: ${sheetName}`)
+
             if (sheetName != "Products") {
                 const response = await sheets.spreadsheets.values.get({
                     spreadsheetId: spreadsheetId,
@@ -176,12 +201,9 @@ const historyOrder = async (req, res) => {
 
         let structuredData = _.groupBy(transformedData, 'orderId')
 
-        // console.log("transcation", structuredData)
-
         let array = []
 
         for (let order in structuredData) {
-            // console.log("-----", order)
             let products = []
             structuredData[order].forEach(ele => {
                 products.push({
@@ -215,8 +237,6 @@ const historyOrder = async (req, res) => {
 
         const userId = req.params.id
 
-        console.log("user", userId)
-
         if (userId) {
             array = array.filter((a) => a.customerId == userId)
         }
@@ -231,113 +251,13 @@ const historyOrder = async (req, res) => {
 
 }
 
-const addSheetToExistingFile = async (req, res) => {
 
-
-    const { title } = req.body
-
-    // console.log("title------", title)
-
-    // return res.status(200).send({ success: true, docs: title })
-
-    try {
-
-        const today = new Date()
-        const monthName = today.toLocaleString('default', { month: 'long' })
-        // console.log("Current month:", monthName)
-
-
-        const sheetName = monthName
-
-        const authClient = await authenticate()
-
-        const sheets = google.sheets({ version: "v4", auth: authClient })
-
-
-        // Add a new sheet
-        const addSheetResponse = await sheets.spreadsheets.batchUpdate({
-            spreadsheetId: spreadsheetId, // ID of the existing Google Sheet
-            resource: {
-                requests: [
-                    {
-                        addSheet: {
-                            properties: {
-                                title: sheetName, // Name of the new sheet
-                            },
-                        },
-                    },
-                ],
-
-            },
-        })
-
-
-        // const data = [["name", "address", "status"]]
-
-        const data = [title]
-
-
-        const range = `${sheetName}` // Start writing at cell A1
-        await sheets.spreadsheets.values.update({
-            spreadsheetId,
-            range,
-            valueInputOption: "RAW", // Write data as is
-            resource: {
-                values: data,
-            },
-        })
-
-        const dropdownOptions = ["initiated", "pending", "completed", "failed"]; // Dropdown options
-        const dropdownColumn = "C";
-
-
-        // Add dropdown (data validation) to a specific column
-        const startRow = 2; // Start dropdown from the second row (below the header)
-        const dropdownRange = `${sheetName}!${dropdownColumn}${startRow}:${dropdownColumn}`; // e.g., B2:B
-        await sheets.spreadsheets.batchUpdate({
-            spreadsheetId,
-            resource: {
-                requests: [
-                    {
-                        setDataValidation: {
-                            range: {
-                                sheetId: addSheetResponse.data.replies[0].addSheet.properties.sheetId,
-                                startRowIndex: startRow - 1, // 0-based index
-                                endRowIndex: 1000, // Arbitrary high number
-                                startColumnIndex: dropdownColumn.charCodeAt(0) - 65, // Convert column letter to index
-                                endColumnIndex: dropdownColumn.charCodeAt(0) - 64, // Exclusive end
-                            },
-                            rule: {
-                                condition: {
-                                    type: "ONE_OF_LIST",
-                                    values: dropdownOptions.map(option => ({ userEnteredValue: option })),
-                                },
-                                strict: true, // Enforce dropdown selection
-                                showCustomUi: true,
-                            },
-                        },
-                    },
-                ],
-            },
-        });
-
-
-        return res.send("sheet created successfully")
-
-    } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
-    }
-
-}
 
 const login = async (req, res) => {
-
-    // console.log("----- login ---------")
 
     const { countryCode, phoneNumber, email } = req.body
     const otp = Math.floor(1000 + Math.random() * 9000).toString()
 
-    // otpStore[phoneNumber] = otp
 
     try {
         const params = {
@@ -378,11 +298,7 @@ const verifyOTP = async (req, res) => {
 
     const { countryCode, email, phoneNumber, otp } = req.body
 
-    // console.log("verify otp", phoneNumber)
-    // console.log("otp", otp)
-    // console.log("email", email)
     let user
-
 
     try {
         if (email) {
@@ -453,11 +369,8 @@ const checkUser = async (req, res) => {
 
 const register = async (req, res) => {
 
-    console.log("--- register ---")
-
     const { custId, countryCode, phoneNo, email, name, } = req.body
 
-    // console.log(req.body)
 
     let user
 
@@ -535,8 +448,6 @@ const register = async (req, res) => {
 }
 
 const profileUpdate = async (req, res) => {
-
-    // console.log("---- update profile ----")
 
     const { phoneNo, email, name } = req.body
 
@@ -624,7 +535,6 @@ const verifyEmail = async (req, res) => {
 
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    // console.log(error)
                     return res.status(200).send({ success: false, message: 'Error sending email' });
                 }
             })
@@ -648,8 +558,6 @@ const verifyEmail = async (req, res) => {
 }
 
 const verifyMobile = async (req, res) => {
-
-    console.log("-----  verify mobile ---------")
 
     const { countryCode, phoneNo } = req.body
 
@@ -801,96 +709,102 @@ const allProducts = async (req, res) => {
 }
 
 
+// API not in use
+
+const addSheetToExistingFile = async (req, res) => {
+
+
+    const { title } = req.body
+
+    try {
+
+        const today = new Date()
+        const monthName = today.toLocaleString('default', { month: 'long' })
+
+        const sheetName = monthName
+
+        const authClient = await authenticate()
+
+        const sheets = google.sheets({ version: "v4", auth: authClient })
+
+
+        // Add a new sheet
+        const addSheetResponse = await sheets.spreadsheets.batchUpdate({
+            spreadsheetId: spreadsheetId, // ID of the existing Google Sheet
+            resource: {
+                requests: [
+                    {
+                        addSheet: {
+                            properties: {
+                                title: sheetName, // Name of the new sheet
+                            },
+                        },
+                    },
+                ],
+
+            },
+        })
+
+
+        const data = [title]
+
+
+        const range = `${sheetName}` // Start writing at cell A1
+        await sheets.spreadsheets.values.update({
+            spreadsheetId,
+            range,
+            valueInputOption: "RAW", // Write data as is
+            resource: {
+                values: data,
+            },
+        })
+
+        const dropdownOptions = ["initiated", "pending", "completed", "failed"]; // Dropdown options
+        const dropdownColumn = "C";
+
+
+        // Add dropdown (data validation) to a specific column
+        const startRow = 2; // Start dropdown from the second row (below the header)
+        const dropdownRange = `${sheetName}!${dropdownColumn}${startRow}:${dropdownColumn}`; // e.g., B2:B
+        await sheets.spreadsheets.batchUpdate({
+            spreadsheetId,
+            resource: {
+                requests: [
+                    {
+                        setDataValidation: {
+                            range: {
+                                sheetId: addSheetResponse.data.replies[0].addSheet.properties.sheetId,
+                                startRowIndex: startRow - 1, // 0-based index
+                                endRowIndex: 1000, // Arbitrary high number
+                                startColumnIndex: dropdownColumn.charCodeAt(0) - 65, // Convert column letter to index
+                                endColumnIndex: dropdownColumn.charCodeAt(0) - 64, // Exclusive end
+                            },
+                            rule: {
+                                condition: {
+                                    type: "ONE_OF_LIST",
+                                    values: dropdownOptions.map(option => ({ userEnteredValue: option })),
+                                },
+                                strict: true, // Enforce dropdown selection
+                                showCustomUi: true,
+                            },
+                        },
+                    },
+                ],
+            },
+        });
+
+
+        return res.send("sheet created successfully")
+
+    } catch (err) {
+        return res.status(500).send({ success: false, message: "internal server error" })
+    }
+
+}
+
 export {
     placeOrder, historyOrder, addSheetToExistingFile, login, verifyOTP, register, profileUpdate, getUser, verifyEmail, verifyMobile,
     profileVerifyOtp, checkUser, allProducts
 }
 
 
-
-// const values = [
-//     [
-//         'OID34641734517821927',
-//         'CUST-3464',
-//         'Stacia Tech',
-//         'Dhal Powder',
-//         60,
-//         '500',
-//         1,
-//         120,
-//         'C-53, Ground floor, Stacia Corp, , India, Tamil Nadu , Guindy , 600032',
-//         '6346533464',
-//         'Delivery by store',
-//         980
-//     ],
-//     [
-//         'OID34641734517821927',
-//         'CUST-3464',
-//         'Stacia Tech',
-//         'Idly Powder',
-//         61,
-//         '250',
-//         2,
-//         50,
-//         'C-53, Ground floor, Stacia Corp, , India, Tamil Nadu , Guindy , 600032',
-//         '6346533464',
-//         'Delivery by store',
-//         980
-//     ],
-//     [
-//         'OID34641734517821927',
-//         'CUST-3464',
-//         'Stacia Tech',
-//         'More Mellkai',
-//         75,
-//         '500',
-//         1,
-//         160,
-//         'C-53, Ground floor, Stacia Corp, , India, Tamil Nadu , Guindy , 600032',
-//         '6346533464',
-//         'Delivery by store',
-//         980
-//     ],
-//     [
-//         'OID34641734517821927',
-//         'CUST-3464',
-//         'Stacia Tech',
-//         'Sundaikai Vathal',
-//         74,
-//         '500',
-//         1,
-//         140,
-//         'C-53, Ground floor, Stacia Corp, , India, Tamil Nadu , Guindy , 600032',
-//         '6346533464',
-//         'Delivery by store',
-//         980
-//     ],
-//     [
-//         'OID34641734517821927',
-//         'CUST-3464',
-//         'Stacia Tech',
-//         'Elai Vadam Big',
-//         85,
-//         '500',
-//         1,
-//         160,
-//         'C-53, Ground floor, Stacia Corp, , India, Tamil Nadu , Guindy , 600032',
-//         '6346533464',
-//         'Delivery by store',
-//         980
-//     ],
-//     [
-//         'OID34641734517821927',
-//         'CUST-3464',
-//         'Stacia Tech',
-//         'Omapodi Vadam',
-//         84,
-//         '500',
-//         2,
-//         150,
-//         'C-53, Ground floor, Stacia Corp, , India, Tamil Nadu , Guindy , 600032',
-//         '6346533464',
-//         'Delivery by store',
-//         980
-//     ]
-// ]
