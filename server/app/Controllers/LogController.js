@@ -218,6 +218,20 @@ const historyOrder = async (req, res) => {
                 })
             })
 
+            let storeNo
+            let upiId
+            let gpayNo
+
+            if (structuredData[order][0].storeAddress == "Valasaravakkam") {
+                storeNo = process.env.VALASARAVAKKAM_STORE_MOBILE_NO
+                upiId = process.env.VALASARAVAKKAM_UPI
+                gpayNo = process.env.VALASARAVAKKAM_GPAY
+            } else {
+                storeNo = process.env.WESTMAMBALAM_MOBILE_NO
+                upiId = process.env.WESTMAMBALAM_UPI
+                gpayNo = process.env.WESTMAMBALAM_GPAY
+            }
+
             array.push({
                 orderId: order,
                 customerId: structuredData[order][0].customerId,
@@ -231,6 +245,9 @@ const historyOrder = async (req, res) => {
                 status: structuredData[order][0].status,
                 grandTotal: structuredData[order][0].total,
                 transcation: structuredData[order][0].transcation ? structuredData[order][0].transcation : null,
+                storeMobileNo: storeNo,
+                upiId,
+                gpayNo,
                 products,
             })
         }
