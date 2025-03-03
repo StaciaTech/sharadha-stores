@@ -544,7 +544,7 @@ const verifyEmail = async (req, res) => {
             })
 
             var mailOptions = {
-                from: process.env.MAIL_USER,
+                from: "Saradha Stores",
                 to: email,
                 subject: "Verify OTP",
                 html: emailTemplate
@@ -720,6 +720,7 @@ const allProducts = async (req, res) => {
 
         return res.status(200).send({ success: true, docs })
     } catch (err) {
+        console.log("err", err)
         return res.status(500).send({ success: false, message: "internal server error" })
     }
 
