@@ -219,17 +219,17 @@ const historyOrder = async (req, res) => {
             })
 
             let storeNo
-            let upiId
-            let gpayNo
+            let upiId = process.env.UPI
+            let gpayNo = process.env.GPAY
 
             if (structuredData[order][0].storeAddress == "Valasaravakkam") {
                 storeNo = process.env.VALASARAVAKKAM_STORE_MOBILE_NO
-                upiId = process.env.VALASARAVAKKAM_UPI
-                gpayNo = process.env.VALASARAVAKKAM_GPAY
+                // upiId = process.env.VALASARAVAKKAM_UPI
+                // gpayNo = process.env.VALASARAVAKKAM_GPAY
             } else {
                 storeNo = process.env.WESTMAMBALAM_MOBILE_NO
-                upiId = process.env.WESTMAMBALAM_UPI
-                gpayNo = process.env.WESTMAMBALAM_GPAY
+                // upiId = process.env.WESTMAMBALAM_UPI
+                // gpayNo = process.env.WESTMAMBALAM_GPAY
             }
 
             array.push({
