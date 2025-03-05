@@ -9,6 +9,8 @@ app.use(express.json())
 dotenv.config()
 app.use(cors())
 
+app.set("view engine", "ejs");
+app.use(express.static("public"));
 
 MongoConnect()
 

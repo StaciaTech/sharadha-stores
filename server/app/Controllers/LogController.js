@@ -12,6 +12,9 @@ import { fileURLToPath } from 'url'
 import moment from 'moment'
 
 
+// import "../../"
+
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -268,8 +271,6 @@ const historyOrder = async (req, res) => {
 
 }
 
-
-
 const login = async (req, res) => {
 
     const { countryCode, phoneNumber, email } = req.body
@@ -510,6 +511,8 @@ const getUser = async (req, res) => {
 
 }
 
+const logoUrl = `https://sharadha-stores.s3.ap-south-1.amazonaws.com/emailLogo/saradha-stores-logo.png`
+
 const verifyEmail = async (req, res) => {
 
     const { email } = req.body
@@ -528,9 +531,14 @@ const verifyEmail = async (req, res) => {
                 { new: true }
             )
 
+
             let emailData = {
-                otp: newOtp
+                otp: newOtp.toString(),
+                userName: user.name,
+                logoUrl: logoUrl,
+                // logoUrl:
             }
+
 
             let emailTemplate = await ejs.renderFile(path.join(__dirname, '../Views/verifyOtp.ejs'), emailData)
 
@@ -569,6 +577,7 @@ const verifyEmail = async (req, res) => {
         }
 
     } catch (err) {
+        console.log("err", err)
         return res.status(500).send({ success: false, message: "internal server error" })
     }
 
@@ -726,6 +735,86 @@ const allProducts = async (req, res) => {
 
 }
 
+const accountDeletionVerify = async (req, res) => {
+
+    const { name, phoneNo } = req.body
+
+    let mongooseQuery = {
+        name: name,
+        phoneNo: phoneNo
+    }
+
+    let user = await UserModel.findOne(mongooseQuery)
+
+    if (user) {
+        const params = {
+            Message: `Saradha Store OTP is: ${otp}`,
+            PhoneNumber: `+91${phoneNo}`, // E.164 format, e.g., +1234567890
+        }
+
+        const command = new PublishCommand(params)
+        const response = await snsClient.send(command)
+
+        return res.status(200).send({ success: true, doc: user, message: "otp sended" })
+    } else {
+        return res.status(200).send({ success: false, message: "Verification fasle, check your credentials" })
+    }
+
+}
+
+
+const accountDeletionRequest = async (req, res) => {
+
+    const { name, phoneNo, otp } = req.body
+
+    let mongooseQuery = {
+        name: name,
+        phoneNo: phoneNo,
+        otp: otp
+    }
+
+    let user = await UserModel.findOne(mongooseQuery)
+
+    if (user) {
+
+        let emailData = {
+            userName: user.name,
+            userEmail: user.email,
+            userPhone: user.phoneNo,
+            logoUrl: logoUrl
+        }
+
+        let emailTemplate = await ejs.renderFile(path.join(__dirname, '../Views/deleteRequest.ejs'), emailData)
+
+        // send email
+        var transporter = await nodeMailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.MAIL_USER,
+                pass: process.env.MAIL_PASS
+            },
+        })
+
+        var mailOptions = {
+            from: "Saradha Stores",
+            to: user.email,
+            subject: "Delete Request Mail",
+            html: emailTemplate
+        }
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                return res.status(200).send({ success: false, message: 'Error sending email' });
+            }
+        })
+
+        return res.status(200).send({
+            success: true,
+            message: 'Mail Submitted Successfully'
+        })
+    }
+
+}
 
 // API not in use
 
@@ -820,9 +909,10 @@ const addSheetToExistingFile = async (req, res) => {
 
 }
 
+
 export {
     placeOrder, historyOrder, addSheetToExistingFile, login, verifyOTP, register, profileUpdate, getUser, verifyEmail, verifyMobile,
-    profileVerifyOtp, checkUser, allProducts
+    profileVerifyOtp, checkUser, allProducts, accountDeletionVerify, accountDeletionRequest
 }
 
 
