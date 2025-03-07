@@ -1,5 +1,5 @@
 import express from "express"
-import { historyOrder, placeOrder, addSheetToExistingFile, login, verifyOTP, register, profileUpdate, getUser, verifyEmail, verifyMobile, checkUser, profileVerifyOtp, allProducts, accountDeletionVerify, accountDeletionRequest } from "../Controllers/LogController.js"
+import { historyOrder, placeOrder, addSheetToExistingFile, login, verifyOTP, register, profileUpdate, getUser, verifyEmail, verifyMobile, checkUser, profileVerifyOtp, allProducts, accountDeletionVerify, accountDeletionRequest, me } from "../Controllers/LogController.js"
 
 const router = express.Router()
 
@@ -20,6 +20,8 @@ router.post("/profile-verify/:id", profileVerifyOtp)
 
 router.post("/check-user", checkUser)
 router.get("/all-products", allProducts)
+
+router.get("/api-me/:userId", me)
 
 
 router.post("/delete-request-verify", accountDeletionVerify)

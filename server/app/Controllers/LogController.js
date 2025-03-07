@@ -10,6 +10,7 @@ import nodeMailer from "nodemailer"
 import path from 'path'
 import { fileURLToPath } from 'url'
 import moment from 'moment'
+import { error } from "console"
 
 
 // import "../../"
@@ -827,6 +828,25 @@ const accountDeletionRequest = async (req, res) => {
 
 }
 
+const me = async (req, res) => {
+
+    try {
+
+        let mongooseQuery = {
+            isDeleted: 0,
+            _id: req.params.userId
+        }
+
+        let user = await UserModel.findOne(mongooseQuery)
+
+        return res.status(200).send({ success: true, doc: user })
+
+    } catch (err) {
+        return res.status(200).send({ success: true, doc: user, error: err })
+    }
+
+}
+
 // API not in use
 
 const addSheetToExistingFile = async (req, res) => {
@@ -1016,7 +1036,7 @@ const addSheetToExistingFile = async (req, res) => {
 
 export {
     placeOrder, historyOrder, addSheetToExistingFile, login, verifyOTP, register, profileUpdate, getUser, verifyEmail, verifyMobile,
-    profileVerifyOtp, checkUser, allProducts, accountDeletionVerify, accountDeletionRequest
+    profileVerifyOtp, checkUser, allProducts, accountDeletionVerify, accountDeletionRequest, me
 }
 
 
