@@ -461,7 +461,7 @@ const register = async (req, res) => {
     }
 
 
-    return res.status(200).send({ success: true, doc: user, error: err, message: "user registered successfully" })
+    return res.status(200).send({ success: true, doc: user, message: "user registered successfully" })
 
 }
 
