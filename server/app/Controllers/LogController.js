@@ -139,7 +139,7 @@ const placeOrder = async (req, res) => {
         return res.status(200).send({ success: true, message: "success" })
 
     } catch (err) {
-        return res.status(200).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 }
@@ -202,7 +202,7 @@ const historyOrder = async (req, res) => {
         })
 
 
-        let structuredData = _.groupBy(transformedData, 'orderId')
+        let structuredData = _.groupBy(transformedData, 'Order_ID')
 
         let array = []
 
@@ -210,14 +210,14 @@ const historyOrder = async (req, res) => {
             let products = []
             structuredData[order].forEach(ele => {
                 products.push({
-                    name: ele.productName,
-                    productId: ele.productId,
-                    weight: ele.weight,
-                    quantity: ele.quantity,
-                    price: ele.price,
-                    itemTotal: ele.itemTotal,
+                    name: ele.Product_Name,
+                    productId: ele.Product_ID,
+                    weight: ele.Weight,
+                    quantity: ele.Quantity,
+                    price: ele.Price,
+                    itemTotal: ele.Total,
                     imageNo: ele.imgNo,
-                    unit: ele.unit
+                    unit: ele.Unit
                 })
             })
 
@@ -237,17 +237,17 @@ const historyOrder = async (req, res) => {
 
             array.push({
                 orderId: order,
-                customerId: structuredData[order][0].customerId,
-                customerName: structuredData[order][0].customerName,
-                date: structuredData[order][0].date,
-                storeAddress: structuredData[order][0].storeAddress,
+                customerId: structuredData[order][0].Customer_ID,
+                customerName: structuredData[order][0].Customer_Name,
+                date: structuredData[order][0].Date,
+                storeAddress: structuredData[order][0].Store_Address,
                 deliveryMode: structuredData[order][0].deliveryMode,
-                orderType: structuredData[order][0].orderType,
-                address: structuredData[order][0].address,
-                phoneNo: structuredData[order][0].phoneNo,
-                status: structuredData[order][0].status,
-                grandTotal: structuredData[order][0].total,
-                transcation: structuredData[order][0].transcation ? structuredData[order][0].transcation : null,
+                orderType: structuredData[order][0].Order_Type,
+                address: structuredData[order][0].Store_Address,
+                phoneNo: structuredData[order][0].Phone_No,
+                status: structuredData[order][0].Status,
+                grandTotal: structuredData[order][0].Total,
+                transcation: structuredData[order][0].Transaction ? structuredData[order][0].Transaction : null,
                 storeMobileNo: storeNo,
                 upiId,
                 gpayNo,
@@ -266,7 +266,7 @@ const historyOrder = async (req, res) => {
         return res.status(200).send({ success: true, docs: array })
 
     } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 }
@@ -306,7 +306,7 @@ const login = async (req, res) => {
         }
 
     } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 
@@ -351,7 +351,7 @@ const verifyOTP = async (req, res) => {
         return res.status(200).send({ success: true, message: "otp verified successfully", token: token, })
 
     } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 
@@ -378,7 +378,7 @@ const checkUser = async (req, res) => {
         return res.status(200).send({ success: true, newUser: true, message: "new user" })
 
     } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 
@@ -457,11 +457,11 @@ const register = async (req, res) => {
         }
 
     } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 
-    return res.status(200).send({ success: true, doc: user, message: "user registered successfully" })
+    return res.status(200).send({ success: true, doc: user, error: err, message: "user registered successfully" })
 
 }
 
@@ -490,7 +490,7 @@ const profileUpdate = async (req, res) => {
         return res.status(200).send({ success: true, doc: user })
 
     } catch (error) {
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 }
 
@@ -506,7 +506,7 @@ const getUser = async (req, res) => {
         return res.status(200).send({ success: true, doc: user })
 
     } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 }
@@ -578,7 +578,7 @@ const verifyEmail = async (req, res) => {
 
     } catch (err) {
         console.log("err", err)
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 }
@@ -614,7 +614,7 @@ const verifyMobile = async (req, res) => {
         return res.status(200).send({ success: true, doc: user, message: "otp sended" })
 
     } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 }
@@ -652,7 +652,7 @@ const profileVerifyOtp = async (req, res) => {
             return res.status(200).send({ success: false, message: "otp invalid" })
         }
     } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 }
@@ -730,7 +730,7 @@ const allProducts = async (req, res) => {
         return res.status(200).send({ success: true, docs })
     } catch (err) {
         console.log("err", err)
-        return res.status(500).send({ success: false, message: "internal server error" })
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 }
@@ -744,20 +744,27 @@ const accountDeletionVerify = async (req, res) => {
         phoneNo: phoneNo
     }
 
-    let user = await UserModel.findOne(mongooseQuery)
+    try {
 
-    if (user) {
-        const params = {
-            Message: `Saradha Store OTP is: ${otp}`,
-            PhoneNumber: `+91${phoneNo}`, // E.164 format, e.g., +1234567890
+        let user = await UserModel.findOne(mongooseQuery)
+
+        if (user) {
+            const params = {
+                Message: `Saradha Store OTP is: ${otp}`,
+                PhoneNumber: `+91${phoneNo}`, // E.164 format, e.g., +1234567890
+            }
+
+            const command = new PublishCommand(params)
+            const response = await snsClient.send(command)
+
+            return res.status(200).send({ success: true, doc: user, message: "otp sended" })
+        } else {
+            return res.status(200).send({ success: false, message: "Verification fasle, check your credentials" })
         }
 
-        const command = new PublishCommand(params)
-        const response = await snsClient.send(command)
-
-        return res.status(200).send({ success: true, doc: user, message: "otp sended" })
-    } else {
-        return res.status(200).send({ success: false, message: "Verification fasle, check your credentials" })
+    } catch (err) {
+        console.log("err", err)
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 }
@@ -772,46 +779,50 @@ const accountDeletionRequest = async (req, res) => {
         phoneNo: phoneNo,
         otp: otp
     }
+    try {
+        let user = await UserModel.findOne(mongooseQuery)
 
-    let user = await UserModel.findOne(mongooseQuery)
+        if (user) {
 
-    if (user) {
-
-        let emailData = {
-            userName: user.name,
-            userEmail: user.email,
-            userPhone: user.phoneNo,
-            logoUrl: logoUrl
-        }
-
-        let emailTemplate = await ejs.renderFile(path.join(__dirname, '../Views/deleteRequest.ejs'), emailData)
-
-        // send email
-        var transporter = await nodeMailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS
-            },
-        })
-
-        var mailOptions = {
-            from: "Saradha Stores",
-            to: user.email,
-            subject: "Delete Request Mail",
-            html: emailTemplate
-        }
-
-        transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-                return res.status(200).send({ success: false, message: 'Error sending email' });
+            let emailData = {
+                userName: user.name,
+                userEmail: user.email,
+                userPhone: user.phoneNo,
+                logoUrl: logoUrl
             }
-        })
 
-        return res.status(200).send({
-            success: true,
-            message: 'Mail Submitted Successfully'
-        })
+            let emailTemplate = await ejs.renderFile(path.join(__dirname, '../Views/deleteRequest.ejs'), emailData)
+
+            // send email
+            var transporter = await nodeMailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.MAIL_USER,
+                    pass: process.env.MAIL_PASS
+                },
+            })
+
+            var mailOptions = {
+                from: "Saradha Stores",
+                to: user.email,
+                subject: "Delete Request Mail",
+                html: emailTemplate
+            }
+
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    return res.status(200).send({ success: false, message: 'Error sending email' });
+                }
+            })
+
+            return res.status(200).send({
+                success: true,
+                message: 'Mail Submitted Successfully'
+            })
+        }
+
+    } catch (err) {
+        return res.status(200).send({ success: false, error: err, message: "internal server error" })
     }
 
 }
@@ -821,91 +832,184 @@ const accountDeletionRequest = async (req, res) => {
 const addSheetToExistingFile = async (req, res) => {
 
 
-    const { title } = req.body
+    // const { title } = req.body
 
-    try {
+    // const today = new Date();
+    // const monthName = today.toLocaleString('default', { month: 'long' });
+    // const sheetName = monthName;
+    // const authClient = await authenticate();
+    // const sheets = google.sheets({ version: "v4", auth: authClient });
 
-        const today = new Date()
-        const monthName = today.toLocaleString('default', { month: 'long' })
+    // // Add a new sheet
+    // const addSheetResponse = await sheets.spreadsheets.batchUpdate({
+    //     spreadsheetId,
+    //     resource: {
+    //         requests: [
+    //             {
+    //                 addSheet: {
+    //                     properties: {
+    //                         title: sheetName,
+    //                     },
+    //                 },
+    //             },
+    //         ],
+    //     },
+    // });
 
-        const sheetName = monthName
+    // const data = [title];
 
-        const authClient = await authenticate()
+    // const range = `${sheetName}`; // Start writing at cell A1
+    // await sheets.spreadsheets.values.update({
+    //     spreadsheetId,
+    //     range,
+    //     valueInputOption: "RAW",
+    //     resource: {
+    //         values: data,
+    //     },
+    // });
 
-        const sheets = google.sheets({ version: "v4", auth: authClient })
+    // const dropdownOptions = ["initiated", "pending", "completed", "failed"];
+    // const dropdownColumn = "Q";
+    // const startRow = 2;
+    // const dropdownRange = `${sheetName}!${dropdownColumn}${startRow}:${dropdownColumn}`;
 
+    // // Get the newly created sheet ID
+    // const sheetId = addSheetResponse.data.replies[0].addSheet.properties.sheetId;
 
-        // Add a new sheet
-        const addSheetResponse = await sheets.spreadsheets.batchUpdate({
-            spreadsheetId: spreadsheetId, // ID of the existing Google Sheet
-            resource: {
-                requests: [
-                    {
-                        addSheet: {
-                            properties: {
-                                title: sheetName, // Name of the new sheet
-                            },
-                        },
-                    },
-                ],
+    // // Add dropdown (data validation)
+    // await sheets.spreadsheets.batchUpdate({
+    //     spreadsheetId,
+    //     resource: {
+    //         requests: [
+    //             {
+    //                 setDataValidation: {
+    //                     range: {
+    //                         sheetId,
+    //                         startRowIndex: startRow - 1,
+    //                         endRowIndex: 1000, // Arbitrary high number
+    //                         startColumnIndex: dropdownColumn.charCodeAt(0) - 65,
+    //                         endColumnIndex: dropdownColumn.charCodeAt(0) - 64,
+    //                     },
+    //                     rule: {
+    //                         condition: {
+    //                             type: "ONE_OF_LIST",
+    //                             values: dropdownOptions.map(option => ({ userEnteredValue: option })),
+    //                         },
+    //                         strict: true,
+    //                         showCustomUi: true,
+    //                     },
+    //                 },
+    //             },
 
-            },
-        })
+    //             // Conditional Formatting Rules for Colors
+    //             {
+    //                 addConditionalFormatRule: {
+    //                     rule: {
+    //                         ranges: [
+    //                             {
+    //                                 sheetId,
+    //                                 startRowIndex: startRow - 1,
+    //                                 endRowIndex: 1000,
+    //                                 startColumnIndex: dropdownColumn.charCodeAt(0) - 65,
+    //                                 endColumnIndex: dropdownColumn.charCodeAt(0) - 64,
+    //                             },
+    //                         ],
+    //                         booleanRule: {
+    //                             condition: {
+    //                                 type: "TEXT_EQ",
+    //                                 values: [{ userEnteredValue: "initiated" }],
+    //                             },
+    //                             format: {
+    //                                 backgroundColor: { red: 1, green: 1, blue: 0 }, // Yellow
+    //                             },
+    //                         },
+    //                     },
+    //                     index: 0,
+    //                 },
+    //             },
+    //             {
+    //                 addConditionalFormatRule: {
+    //                     rule: {
+    //                         ranges: [
+    //                             {
+    //                                 sheetId,
+    //                                 startRowIndex: startRow - 1,
+    //                                 endRowIndex: 1000,
+    //                                 startColumnIndex: dropdownColumn.charCodeAt(0) - 65,
+    //                                 endColumnIndex: dropdownColumn.charCodeAt(0) - 64,
+    //                             },
+    //                         ],
+    //                         booleanRule: {
+    //                             condition: {
+    //                                 type: "TEXT_EQ",
+    //                                 values: [{ userEnteredValue: "pending" }],
+    //                             },
+    //                             format: {
+    //                                 backgroundColor: { red: 1, green: 0.5, blue: 0 }, // Orange
+    //                             },
+    //                         },
+    //                     },
+    //                     index: 1,
+    //                 },
+    //             },
+    //             {
+    //                 addConditionalFormatRule: {
+    //                     rule: {
+    //                         ranges: [
+    //                             {
+    //                                 sheetId,
+    //                                 startRowIndex: startRow - 1,
+    //                                 endRowIndex: 1000,
+    //                                 startColumnIndex: dropdownColumn.charCodeAt(0) - 65,
+    //                                 endColumnIndex: dropdownColumn.charCodeAt(0) - 64,
+    //                             },
+    //                         ],
+    //                         booleanRule: {
+    //                             condition: {
+    //                                 type: "TEXT_EQ",
+    //                                 values: [{ userEnteredValue: "completed" }],
+    //                             },
+    //                             format: {
+    //                                 backgroundColor: { red: 0, green: 1, blue: 0 }, // Green
+    //                             },
+    //                         },
+    //                     },
+    //                     index: 2,
+    //                 },
+    //             },
+    //             {
+    //                 addConditionalFormatRule: {
+    //                     rule: {
+    //                         ranges: [
+    //                             {
+    //                                 sheetId,
+    //                                 startRowIndex: startRow - 1,
+    //                                 endRowIndex: 1000,
+    //                                 startColumnIndex: dropdownColumn.charCodeAt(0) - 65,
+    //                                 endColumnIndex: dropdownColumn.charCodeAt(0) - 64,
+    //                             },
+    //                         ],
+    //                         booleanRule: {
+    //                             condition: {
+    //                                 type: "TEXT_EQ",
+    //                                 values: [{ userEnteredValue: "failed" }],
+    //                             },
+    //                             format: {
+    //                                 backgroundColor: { red: 1, green: 0, blue: 0 }, // Red
+    //                             },
+    //                         },
+    //                     },
+    //                     index: 3,
+    //                 },
+    //             },
+    //         ],
+    //     },
+    // })
 
+    // console.log("Dropdown with conditional formatting applied.");
 
-        const data = [title]
+    // return res.send("success")
 
-
-        const range = `${sheetName}` // Start writing at cell A1
-        await sheets.spreadsheets.values.update({
-            spreadsheetId,
-            range,
-            valueInputOption: "RAW", // Write data as is
-            resource: {
-                values: data,
-            },
-        })
-
-        const dropdownOptions = ["initiated", "pending", "completed", "failed"]; // Dropdown options
-        const dropdownColumn = "C";
-
-
-        // Add dropdown (data validation) to a specific column
-        const startRow = 2; // Start dropdown from the second row (below the header)
-        const dropdownRange = `${sheetName}!${dropdownColumn}${startRow}:${dropdownColumn}`; // e.g., B2:B
-        await sheets.spreadsheets.batchUpdate({
-            spreadsheetId,
-            resource: {
-                requests: [
-                    {
-                        setDataValidation: {
-                            range: {
-                                sheetId: addSheetResponse.data.replies[0].addSheet.properties.sheetId,
-                                startRowIndex: startRow - 1, // 0-based index
-                                endRowIndex: 1000, // Arbitrary high number
-                                startColumnIndex: dropdownColumn.charCodeAt(0) - 65, // Convert column letter to index
-                                endColumnIndex: dropdownColumn.charCodeAt(0) - 64, // Exclusive end
-                            },
-                            rule: {
-                                condition: {
-                                    type: "ONE_OF_LIST",
-                                    values: dropdownOptions.map(option => ({ userEnteredValue: option })),
-                                },
-                                strict: true, // Enforce dropdown selection
-                                showCustomUi: true,
-                            },
-                        },
-                    },
-                ],
-            },
-        });
-
-
-        return res.send("sheet created successfully")
-
-    } catch (err) {
-        return res.status(500).send({ success: false, message: "internal server error" })
-    }
 
 }
 
@@ -914,5 +1018,85 @@ export {
     placeOrder, historyOrder, addSheetToExistingFile, login, verifyOTP, register, profileUpdate, getUser, verifyEmail, verifyMobile,
     profileVerifyOtp, checkUser, allProducts, accountDeletionVerify, accountDeletionRequest
 }
+
+
+
+// try {
+
+//     const today = new Date()
+//     const monthName = today.toLocaleString('default', { month: 'long' })
+//     const sheetName = monthName
+//     const authClient = await authenticate()
+//     const sheets = google.sheets({ version: "v4", auth: authClient })
+
+//     // Add a new sheet
+//     const addSheetResponse = await sheets.spreadsheets.batchUpdate({
+//         spreadsheetId: spreadsheetId, // ID of the existing Google Sheet
+//         resource: {
+//             requests: [
+//                 {
+//                     addSheet: {
+//                         properties: {
+//                             title: sheetName, // Name of the new sheet
+//                         },
+//                     },
+//                 },
+//             ],
+
+//         },
+//     })
+
+//     const data = [title]
+
+//     const range = `${sheetName}` // Start writing at cell A1
+//     await sheets.spreadsheets.values.update({
+//         spreadsheetId,
+//         range,
+//         valueInputOption: "RAW", // Write data as is
+//         resource: {
+//             values: data,
+//         },
+//     })
+
+//     const dropdownOptions = ["initiated", "pending", "completed", "failed"]; // Dropdown options
+//     const dropdownColumn = "Q";
+
+
+//     // Add dropdown (data validation) to a specific column
+//     const startRow = 2; // Start dropdown from the second row (below the header)
+//     const dropdownRange = `${sheetName}!${dropdownColumn}${startRow}:${dropdownColumn}`; // e.g., B2:B
+//     await sheets.spreadsheets.batchUpdate({
+//         spreadsheetId,
+//         resource: {
+//             requests: [
+//                 {
+//                     setDataValidation: {
+//                         range: {
+//                             sheetId: addSheetResponse.data.replies[0].addSheet.properties.sheetId,
+//                             startRowIndex: startRow - 1, // 0-based index
+//                             endRowIndex: 1000, // Arbitrary high number
+//                             startColumnIndex: dropdownColumn.charCodeAt(0) - 65, // Convert column letter to index
+//                             endColumnIndex: dropdownColumn.charCodeAt(0) - 64, // Exclusive end
+//                         },
+//                         rule: {
+//                             condition: {
+//                                 type: "ONE_OF_LIST",
+//                                 values: dropdownOptions.map(option => ({ userEnteredValue: option })),
+//                             },
+//                             strict: true, // Enforce dropdown selection
+//                             showCustomUi: true,
+//                         },
+//                     },
+//                 },
+//             ],
+//         },
+//     });
+
+
+//     return res.send("sheet created successfully")
+
+// } catch (err) {
+//     return res.status(200).send({ success: false, message: "internal server error" })
+// }
 
 
