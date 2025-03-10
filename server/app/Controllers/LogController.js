@@ -106,7 +106,6 @@ const placeOrder = async (req, res) => {
             resource,
         })
 
-
         let mobNo
         if (storeAddress == "Valasaravakkam") {
             mobNo = process.env.VALASARAVAKKAM_STORE_MOBILE_NO
@@ -261,8 +260,11 @@ const historyOrder = async (req, res) => {
         if (userId) {
             array = array.filter((a) => a.customerId == userId)
         }
+        const currentYear = new Date().getFullYear()
 
-        array = array.sort((a, b) => b.date.localeCompare(a.date))
+        array = array.sort((a, b) => {
+            return new Date(`${currentYear} ${b.date}`) - new Date(`${currentYear} ${a.date}`)
+        })
 
         return res.status(200).send({ success: true, docs: array })
 
