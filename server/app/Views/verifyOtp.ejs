@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            max-width: 400px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            width: 50px;
+            margin-bottom: 20px;
+        }
+
+        .otp-box {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .otp-digit {
+            background: #f0f3ff;
+            padding: 15px;
+            margin: 5px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 8px;
+            width: 40px;
+            text-align: center;
+        }
+
+        .highlight {
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .footer span {
+            color: #f97316;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="<%= logoUrl %>" alt="Logo" class="logo">
+        <h2>Hi <%= userName %>,</h2>
+        <p>Here is your One Time Password (OTP). Please enter this code to verify your email address</p>
+        <div class="otp-box">
+            <% otp.split('').forEach(digit=> { %>
+                <div class="otp-digit">
+                    <%= digit %>
+                </div>
+                <% }); %>
+        </div>
+        <p>OTP will expire in <span class="highlight">5 minutes</span>.</p>
+        <div class="footer">
+            <span>Sharadha</span> Stores
+        </div>
+    </div>
+</body>
+
+</html>
