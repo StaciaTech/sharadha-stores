@@ -46,16 +46,215 @@ const currentMonth = moment().format("MMMM");
 const spreadsheetId = process.env.SPREADSHEETID;
 const sheetName = currentMonth;
 
+const ensureSheetExists = async (sheets, spreadsheetId, sheetName) => {
+  try {
+    // Get spreadsheet metadata to check existing sheets
+    const metadata = await sheets.spreadsheets.get({
+      spreadsheetId,
+    });
+
+    const sheetsInfo = metadata.data.sheets;
+    const sheetExists = sheetsInfo.some(
+      (sheet) => sheet.properties.title === sheetName
+    );
+
+    if (!sheetExists) {
+      // Create a new sheet with the current month name
+      const createSheetResponse = await sheets.spreadsheets.batchUpdate({
+        spreadsheetId,
+        resource: {
+          requests: [
+            {
+              addSheet: {
+                properties: {
+                  title: sheetName,
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      // Get the new sheet's ID
+      const newSheetId =
+        createSheetResponse.data.replies[0].addSheet.properties.sheetId;
+
+      // Find the most recent month's sheet (excluding "Products" and the new sheet)
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      const existingMonthSheets = sheetsInfo
+        .filter(
+          (sheet) =>
+            sheet.properties.title !== "Products" &&
+            sheet.properties.title !== sheetName &&
+            monthNames.includes(sheet.properties.title)
+        )
+        .map((sheet) => sheet.properties.title);
+
+      let headers = [];
+      let previousSheetName = null;
+
+      if (existingMonthSheets.length > 0) {
+        // Sort sheets by month order, assuming current year
+        const currentYear = moment().year();
+        existingMonthSheets.sort((a, b) => {
+          const dateA = moment(`${a} ${currentYear}`, "MMMM YYYY");
+          const dateB = moment(`${b} ${currentYear}`, "MMMM YYYY");
+          return dateB - dateA; // Most recent first
+        });
+        previousSheetName = existingMonthSheets[0]; // Take the most recent month
+
+        // Fetch headers from the previous month's sheet
+        const response = await sheets.spreadsheets.values.get({
+          spreadsheetId,
+          range: `${previousSheetName}!1:1`, // Get only the first row
+        });
+
+        headers = response.data.values ? response.data.values[0] : [];
+      }
+
+      if (headers.length === 0) {
+        // Fallback: Define default headers if no previous sheet exists
+        headers = [
+          "Order_ID",
+          "Customer_ID",
+          "Customer_Name",
+          "Product_Name",
+          "Product_ID",
+          "Weight",
+          "Quantity",
+          "Price",
+          "Total",
+          "imgNo",
+          "Unit",
+          "Store_Address",
+          "Customer_Address",
+          "Phone_No",
+          "deliveryMode",
+          "Total_Amount",
+          "Order_Type",
+          "Status",
+          // Add other headers as needed based on your spreadsheet structure
+        ];
+        console.warn("No previous month sheet found; using default headers");
+      }
+
+      if (previousSheetName) {
+        const previousSheetMeta = sheetsInfo.find(
+          (sheet) => sheet.properties.title === previousSheetName
+        );
+        const previousSheetId = previousSheetMeta.properties.sheetId;
+
+        // Copy dropdown validation rule from column Q (index 16) of previous sheet
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          resource: {
+            requests: [
+              {
+                copyPaste: {
+                  source: {
+                    sheetId: previousSheetId,
+                    startRowIndex: 1,
+                    endRowIndex: 2, // only need one row with the validation
+                    startColumnIndex: 16,
+                    endColumnIndex: 17,
+                  },
+                  destination: {
+                    sheetId: newSheetId,
+                    startRowIndex: 1,
+                    endRowIndex: 1000,
+                    startColumnIndex: 16,
+                    endColumnIndex: 17,
+                  },
+                  pasteType: "PASTE_DATA_VALIDATION",
+                },
+              },
+            ],
+          },
+        });
+
+        console.log(
+          `Copied dropdown from ${previousSheetName} column Q to ${sheetName}`
+        );
+      }
+
+      if (headers.length > 0) {
+        // Append headers to the new sheet
+        await sheets.spreadsheets.values.append({
+          spreadsheetId,
+          range: `${sheetName}!A1`,
+          valueInputOption: "USER_ENTERED",
+          resource: { values: [headers] },
+        });
+
+        // Apply bold formatting to the header row
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          resource: {
+            requests: [
+              {
+                repeatCell: {
+                  range: {
+                    sheetId: newSheetId,
+                    startRowIndex: 0,
+                    endRowIndex: 1,
+                    startColumnIndex: 0,
+                    endColumnIndex: headers.length,
+                  },
+                  cell: {
+                    userEnteredFormat: {
+                      textFormat: {
+                        bold: true,
+                      },
+                    },
+                  },
+                  fields: "userEnteredFormat.textFormat",
+                },
+              },
+            ],
+          },
+        });
+
+        console.log(
+          `Copied headers from ${
+            previousSheetName || "default"
+          } to ${sheetName} with bold formatting`
+        );
+      } else {
+        console.warn("No headers available to append");
+      }
+
+      console.log(`Created new sheet: ${sheetName}`);
+    } else {
+      console.log(`Sheet ${sheetName} already exists`);
+    }
+  } catch (err) {
+    console.error(`Error ensuring sheet exists: ${err}`);
+    throw err;
+  }
+};
 const placeOrder = async (req, res) => {
+  const currentMonth = moment().format("MMMM"); // Compute per request
+  const sheetName = currentMonth;
   const { values } = req.body;
 
-  console.log("checking here", currentMonth);
+  console.log("Current month:", currentMonth);
 
   try {
     const removeDuplicatesInCells = (arr, columnsToCheck) => {
-      const seen = {}; // Track seen values for specified columns
-
-      // Initialize a Set for each specified column
+      const seen = {};
       columnsToCheck.forEach((col) => {
         seen[col] = new Set();
       });
@@ -63,32 +262,33 @@ const placeOrder = async (req, res) => {
       return arr?.map((row) => {
         return row?.map((cell, colIndex) => {
           if (columnsToCheck.includes(colIndex)) {
-            // Check only specified columns
             if (seen[colIndex].has(cell)) {
-              return ""; // Replace duplicate with an empty string
+              return "";
             } else {
-              seen[colIndex].add(cell); // Add unique value to the set
-              return cell; // Keep the value
+              seen[colIndex].add(cell);
+              return cell;
             }
           } else {
-            return cell; // Leave other columns untouched
+            return cell;
           }
         });
       });
     };
 
     const columnsToCheck = [0, 1, 2, 3, 11, 12, 13, 14, 15, 16, 17];
-
     const transformedValues = removeDuplicatesInCells(values, columnsToCheck);
 
     const auth = await authenticate();
     const sheets = google.sheets({ version: "v4", auth });
-    const range = sheetName;
-    const valueInputOption = "USER_ENTERED";
 
-    // Prepare request
+    // Ensure the sheet exists and has bold headers
+    await ensureSheetExists(sheets, spreadsheetId, sheetName);
+
+    const range = `${sheetName}!A2`; // Start from A2 to skip headers
+    const valueInputOption = "USER_ENTERED";
     const resource = { values: transformedValues };
 
+    // Extract customer and order details
     const customerMobileNo = transformedValues[0][13];
     const storeAddress = transformedValues[0][11];
     const orderId = transformedValues[0][0];
@@ -104,44 +304,43 @@ const placeOrder = async (req, res) => {
       resource,
     });
 
+    // Determine store mobile number
     let mobNo;
-    if (storeAddress == "Valasaravakkam") {
+    if (storeAddress === "Valasaravakkam") {
       mobNo = process.env.VALASARAVAKKAM_STORE_MOBILE_NO;
     } else {
       mobNo = process.env.WESTMAMBALAM_MOBILE_NO;
     }
 
-    //#region  - store logic
-    // const params = {
-    //     Message: `OrderId: ${orderId},\n Customer Name: ${customerName},\n Customer Number: +91${customerMobileNo},\n Customer Address: ${customerAddress},\n Total Order Amount: ₹ ${totalAmount}`,
-    //     PhoneNumber: `+91${mobNo}`, // E.164 format, e.g., +1234567890
-    // }
+    // Uncomment and adjust SNS notifications if needed
+    /*
+    const params = {
+      Message: `OrderId: ${orderId},\n Customer Name: ${customerName},\n Customer Number: +91${customerMobileNo},\n Customer Address: ${customerAddress},\n Total Order Amount: ₹ ${totalAmount}`,
+      PhoneNumber: `+91${mobNo}`,
+    };
+    const command = new PublishCommand(params);
+    await snsClient.send(command);
 
-    // const command = new PublishCommand(params)
-    // const response = await snsClient.send(command)
-
-    // //#endregion
-
-    // if (customerMobileNo) {
-
-    //     const params = {
-    //         Message: `Your order Id ${orderId} has been successfully placed. The store will reach out to you soon, For assistance, call +91${mobNo}, Sharadha Stores ${storeAddress} branch.`,
-    //         PhoneNumber: `+91${customerMobileNo}`, // E.164 format, e.g., +1234567890
-    //     }
-
-    //     const command = new PublishCommand(params)
-    //     const response = await snsClient.send(command)
-
-    // }
+    if (customerMobileNo) {
+      const customerParams = {
+        Message: `Your order Id ${orderId} has been successfully placed. The store will reach out to you soon, For assistance, call +91${mobNo}, Sharadha Stores ${storeAddress} branch.`,
+        PhoneNumber: `+91${customerMobileNo}`,
+      };
+      const customerCommand = new PublishCommand(customerParams);
+      await snsClient.send(customerCommand);
+    }
+    */
 
     return res.status(200).send({ success: true, message: "success" });
   } catch (err) {
-    return res
-      .status(200)
-      .send({ success: false, error: err, message: "internal server error" });
+    console.error("Error in placeOrder:", err);
+    return res.status(500).send({
+      success: false,
+      error: err.message,
+      message: "internal server error",
+    });
   }
 };
-
 const historyOrder = async (req, res) => {
   try {
     const auth = await authenticate();
