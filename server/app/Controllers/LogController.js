@@ -482,6 +482,7 @@ const login = async (req, res) => {
 
     const command = new PublishCommand(params);
     const response = await snsClient.send(command);
+    console.log(response);
 
     let user;
 
